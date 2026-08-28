@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  FileSpreadsheet
 } from 'lucide-react';
 import { DatlapDocument } from '../types/datlap';
 
@@ -25,6 +26,7 @@ interface HeaderMetadataProps {
   onOpenDrafts: () => void;
   onSaveDraft: () => void;
   onExportCSV: () => void;
+  onExportExcel: () => void;
   onExportPDF: () => void;
   onPrint: () => void;
   auditPass?: boolean;
@@ -40,6 +42,7 @@ export const HeaderMetadata: React.FC<HeaderMetadataProps> = ({
   onOpenDrafts,
   onSaveDraft,
   onExportCSV,
+  onExportExcel,
   onExportPDF,
   onPrint,
 }) => {
@@ -199,9 +202,18 @@ export const HeaderMetadata: React.FC<HeaderMetadataProps> = ({
             </button>
 
             <button
+              onClick={onExportExcel}
+              className="px-3 py-1.5 bg-emerald-800/80 hover:bg-emerald-700 text-emerald-100 border border-emerald-600/60 rounded-md flex items-center gap-1.5 font-medium transition-colors cursor-pointer"
+              title="Unduh seluruh formulir resmi dalam format Microsoft Excel (.xlsx)"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Export Excel</span>
+            </button>
+
+            <button
               onClick={onExportCSV}
               className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-md flex items-center gap-1.5 font-medium transition-colors"
-              title="Unduh data dalam format CSV / Excel"
+              title="Unduh data dalam format CSV"
             >
               <Download className="w-3.5 h-3.5 text-sky-400" />
               <span>Export CSV</span>
@@ -328,6 +340,17 @@ export const HeaderMetadata: React.FC<HeaderMetadataProps> = ({
 
               <button
                 onClick={() => {
+                  onExportExcel();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="p-2 bg-emerald-800/90 hover:bg-emerald-700 text-emerald-100 border border-emerald-600/70 rounded-lg flex items-center justify-center gap-1.5 text-xs font-semibold"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Export Excel</span>
+              </button>
+
+              <button
+                onClick={() => {
                   onExportCSV();
                   setIsMobileMenuOpen(false);
                 }}
@@ -353,7 +376,7 @@ export const HeaderMetadata: React.FC<HeaderMetadataProps> = ({
                   onExportPDF();
                   setIsMobileMenuOpen(false);
                 }}
-                className="p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg flex items-center justify-center gap-1.5 text-xs font-bold shadow-xs"
+                className="col-span-2 p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg flex items-center justify-center gap-1.5 text-xs font-bold shadow-xs"
               >
                 <FileDown className="w-3.5 h-3.5" />
                 <span>Unduh PDF Resmi</span>

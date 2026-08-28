@@ -15,7 +15,7 @@ import {
   INITIAL_HEADER_DATA, 
   createEmptyRow 
 } from './types/datlap';
-import { exportToCSV, exportToJSON, exportToPDF, triggerPrintDialog } from './utils/exportUtils';
+import { exportToCSV, exportToExcel, exportToJSON, exportToPDF, triggerPrintDialog } from './utils/exportUtils';
 import { 
   FileSpreadsheet, 
   ShieldCheck, 
@@ -49,6 +49,7 @@ const INITIAL_DOC: DatlapDocument = {
   rows: [
     {
       id: 'row-1',
+      labId: '',
       titikSampling: '',
       jam: '',
       koordinatNS: '',
@@ -136,7 +137,7 @@ export default function App() {
     }
 
     try {
-      const success = await exportToPDF(doc, 'official-form-sheet');
+      const success = await exportToPDF(doc, 'official-form-page');
       if (success) {
         showToast('File PDF resmi berhasil diunduh ke perangkat!', 'success');
       } else {
@@ -362,6 +363,10 @@ export default function App() {
         onExportCSV={() => {
           exportToCSV(doc);
           showToast('Data CSV berhasil diunduh');
+        }}
+        onExportExcel={() => {
+          exportToExcel(doc);
+          showToast('Formulir resmi Excel (.xlsx) berhasil diunduh');
         }}
         onExportPDF={handleDirectPDFExport}
         onPrint={() => {

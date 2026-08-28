@@ -22,13 +22,14 @@ export interface InSituParamsConfig {
 
 export interface DatlapRow {
   id: string;
+  labId: string;             // Kode Laboratorium (contoh: AKL-26-0811)
   titikSampling: string;     // Wajib
   jam: string;               // Wajib
   koordinatNS: string;       // Wajib (e.g. S 06°12'34.5" or -6.2088)
   koordinatE: string;        // Wajib (e.g. E 106°49'12.3" or 106.8200)
   // Parameter In-situ (Menyesuaikan permintaan pengujian customer)
   temperatur: string;        // °C
-  pH: string;
+  pH: string;                // 2 desimal (e.g. 7,00)
   klorinBebas: string;       // abs / mg/L
   doVal: string;             // mg/L
   kecerahan: string;         // m
@@ -92,6 +93,7 @@ export const INITIAL_HEADER_DATA: HeaderData = {
 
 export const createEmptyRow = (index: number): DatlapRow => ({
   id: `row-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 4)}`,
+  labId: '',
   titikSampling: '',
   jam: '',
   koordinatNS: '',

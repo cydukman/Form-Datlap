@@ -34,6 +34,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
         rows: [
           {
             id: 'row-1',
+            labId: 'AKL-26-0001',
             titikSampling: 'Inlet IPAL (Equalization Basin)',
             jam: '08:30 WIB',
             koordinatNS: `S 06° 19' 42.1"`,
@@ -50,6 +51,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
           },
           {
             id: 'row-2',
+            labId: 'AKL-26-0002',
             titikSampling: 'Bak Aerasi (Aeration Tank)',
             jam: '09:00 WIB',
             koordinatNS: `S 06° 19' 43.5"`,
@@ -66,6 +68,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
           },
           {
             id: 'row-3',
+            labId: 'AKL-26-0003',
             titikSampling: 'Outlet WWTP (Final Effluent)',
             jam: '09:45 WIB',
             koordinatNS: `S 06° 19' 45.8"`,
@@ -113,6 +116,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
         rows: [
           {
             id: 'row-1',
+            labId: 'AKL-26-0004',
             titikSampling: 'Sungai Hulu (Upstream 100m)',
             jam: '08:15 WIB',
             koordinatNS: `S 06° 15' 12.0"`,
@@ -129,6 +133,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
           },
           {
             id: 'row-2',
+            labId: 'AKL-26-0005',
             titikSampling: 'Sungai Hilir (Downstream 200m)',
             jam: '09:00 WIB',
             koordinatNS: `S 06° 15' 28.5"`,
@@ -176,6 +181,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
         rows: [
           {
             id: 'row-1',
+            labId: 'AKL-26-0006',
             titikSampling: 'Kran Pengolahan Filter RO Utama',
             jam: '07:45 WIB',
             koordinatNS: `S 06° 17' 05.2"`,
@@ -192,6 +198,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
           },
           {
             id: 'row-2',
+            labId: 'AKL-26-0007',
             titikSampling: 'Dispenser Kantin Karyawan Lt. 1',
             jam: '08:10 WIB',
             koordinatNS: `S 06° 17' 06.0"`,
