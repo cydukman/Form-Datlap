@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  code, kbd, samp, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom styles for high-density lab inputs */
+.datlap-input {
+  transition: all 0.15s ease-in-out;
+}
+.datlap-input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 1px #10b981;
+}
+
+/* Green mandatory marker styling */
+.marker-wajib {
+  background-color: #d1fae5;
+  color: #065f46;
+  font-weight: 700;
+}
+
+/* Print layout for exact AKL-FO-7.3-36 formulir */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm 6mm 8mm 6mm;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 8pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  table.official-form-table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  table.official-form-table th,
+  table.official-form-table td {
+    border: 1px solid black !important;
+    padding: 3px 4px !important;
+  }
+}
+
+@media screen {
+  .print-only {
+    display: none;
+  }
+}
+

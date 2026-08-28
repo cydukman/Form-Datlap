@@ -1,0 +1,10 @@
+{
+  "name": "Form Datlap Sampling Pelanggan - ANKAL",
+  "description": "Formulir digital Data Lapangan (Datlap) Pengambilan Contoh Uji Air oleh Pelanggan (AKL-FO-7.3-36) Laboratorium Lingkungan ANKAL.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
