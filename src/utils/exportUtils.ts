@@ -5,7 +5,6 @@ import { toPng } from 'html-to-image';
 export function exportToCSV(doc: DatlapDocument): void {
   const headers = [
     'No',
-    'LAB ID',
     'Titik Sampling (Wajib)',
     'Jam (Wajib)',
     'Titik Koordinat N/S (Wajib)',
@@ -25,7 +24,6 @@ export function exportToCSV(doc: DatlapDocument): void {
     ['FORMULIR PENGAMBILAN CONTOH UJI AIR OLEH PELANGGAN'],
     ['No. Dokumen', doc.docCode, 'Tgl Terbit', doc.tanggalTerbit, 'Revisi', doc.terbitRevisi],
     [''],
-    ['NO. SURAT PENGANTAR', doc.header.noSuratPengantar],
     ['NAMA PELANGGAN', doc.header.namaPelanggan],
     ['ALAMAT', doc.header.alamat],
     ['NARAHUBUNG', doc.header.narahubung],
@@ -39,7 +37,6 @@ export function exportToCSV(doc: DatlapDocument): void {
 
   const tableRows = doc.rows.map((row, idx) => [
     (idx + 1).toString(),
-    `"${row.labId || ''}"`,
     `"${row.titikSampling || ''}"`,
     `"${row.jam || ''}"`,
     `"${row.koordinatNS || ''}"`,

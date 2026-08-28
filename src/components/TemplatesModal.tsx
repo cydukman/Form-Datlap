@@ -24,7 +24,6 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
       description: 'Sampling titik inlet IPAL, aerasi, sedimentasi, dan outlet pembuangan menuju badan air.',
       data: {
         header: {
-          noSuratPengantar: 'SP-044/WWTP-IND/VIII/2026',
           namaPelanggan: 'PT. Indo Chemical Synthetic Tbk',
           alamat: 'Kawasan Industri EJIP Plot 5C, Cikarang Selatan, Bekasi',
           narahubung: 'Bpk. Dimas Pratama (0813-8899-1122)',
@@ -35,7 +34,6 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
         rows: [
           {
             id: 'row-1',
-            labId: 'AKL-26-0811',
             titikSampling: 'Inlet IPAL (Equalization Basin)',
             jam: '08:30 WIB',
             koordinatNS: `S 06° 19' 42.1"`,
@@ -52,7 +50,6 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
           },
           {
             id: 'row-2',
-            labId: 'AKL-26-0812',
             titikSampling: 'Bak Aerasi (Aeration Tank)',
             jam: '09:00 WIB',
             koordinatNS: `S 06° 19' 43.5"`,
@@ -69,7 +66,6 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
           },
           {
             id: 'row-3',
-            labId: 'AKL-26-0813',
             titikSampling: 'Outlet WWTP (Final Effluent)',
             jam: '09:45 WIB',
             koordinatNS: `S 06° 19' 45.8"`,
@@ -107,7 +103,6 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
       description: 'Pengambilan contoh uji sungai upstream, point source mixing zone, dan downstream.',
       data: {
         header: {
-          noSuratPengantar: 'SP-088/ENV-MON/VIII/2026',
           namaPelanggan: 'PT. Agro Nusantara Perkasa',
           alamat: 'Jl. Raya Sungai Citarum KM 22, Karawang Barat',
           narahubung: 'Ibu Ratna Kumalasari (0856-7788-9900)',
@@ -118,7 +113,6 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
         rows: [
           {
             id: 'row-1',
-            labId: 'AKL-26-0901',
             titikSampling: 'Sungai Hulu (Upstream 100m)',
             jam: '08:15 WIB',
             koordinatNS: `S 06° 15' 12.0"`,
@@ -135,7 +129,6 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
           },
           {
             id: 'row-2',
-            labId: 'AKL-26-0902',
             titikSampling: 'Sungai Hilir (Downstream 200m)',
             jam: '09:00 WIB',
             koordinatNS: `S 06° 15' 28.5"`,
@@ -173,7 +166,6 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
       description: 'Sampling air minum galon/depot, dispenser kantin, dan kran sumber air bersih karyawan.',
       data: {
         header: {
-          noSuratPengantar: 'SP-102/K3-DRINK/VIII/2026',
           namaPelanggan: 'PT. Mega Food & Beverage Manufacturing',
           alamat: 'Kawasan Industri MM2100 Blok DD-3, Cikarang Barat',
           narahubung: 'Dr. Anita Wijaya - Klinik Perusahaan (0811-2233-4455)',
@@ -184,7 +176,6 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
         rows: [
           {
             id: 'row-1',
-            labId: 'AKL-26-0951',
             titikSampling: 'Kran Pengolahan Filter RO Utama',
             jam: '07:45 WIB',
             koordinatNS: `S 06° 17' 05.2"`,
@@ -201,7 +192,6 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
           },
           {
             id: 'row-2',
-            labId: 'AKL-26-0952',
             titikSampling: 'Dispenser Kantin Karyawan Lt. 1',
             jam: '08:10 WIB',
             koordinatNS: `S 06° 17' 06.0"`,

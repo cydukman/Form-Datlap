@@ -40,44 +40,9 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Left Side: 6 Mandatory Rows replicating the ANKAL Form Header */}
+        {/* Left Side: Mandatory Rows replicating the ANKAL Form Header */}
         <div className="lg:col-span-8 space-y-2.5">
-          {/* Row 1: No Surat Pengantar */}
-          <div className={`p-1.5 rounded transition-all ${
-            highlightWajibOnly ? 'bg-emerald-50/60 ring-1 ring-emerald-300' : ''
-          }`}>
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
-              <label 
-                htmlFor="noSuratPengantar"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-4 border-emerald-500 pl-2 bg-emerald-50/70 py-1 rounded-r"
-              >
-                <Hash className="w-3 h-3 text-emerald-600 shrink-0" />
-                <span>NO. SURAT PENGANTAR</span>
-                <span className="text-emerald-700 font-extrabold">*</span>
-              </label>
-              <div className="sm:col-span-8 relative">
-                <input
-                  id="noSuratPengantar"
-                  type="text"
-                  value={header.noSuratPengantar}
-                  onChange={(e) => onChange('noSuratPengantar', e.target.value)}
-                  placeholder="Contoh: SP-082/ANKAL-PLG/VIII/2026 atau No. Order"
-                  className={`w-full px-2.5 py-1.5 text-xs rounded border transition-colors ${
-                    isMissing(header.noSuratPengantar)
-                      ? 'border-amber-400 bg-amber-50/30 focus:border-emerald-500 focus:bg-white'
-                      : 'border-slate-300 bg-white focus:border-emerald-500'
-                  }`}
-                />
-                {isMissing(header.noSuratPengantar) && (
-                  <span className="text-[10px] text-amber-700 font-medium absolute right-2 top-2">
-                    Wajib diisi
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Row 2: Nama Pelanggan */}
+          {/* Row 1: Nama Pelanggan */}
           <div className={`p-1.5 rounded transition-all ${
             highlightWajibOnly ? 'bg-emerald-50/60 ring-1 ring-emerald-300' : ''
           }`}>

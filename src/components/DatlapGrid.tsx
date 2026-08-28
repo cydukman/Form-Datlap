@@ -146,12 +146,9 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
               <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center w-10 bg-slate-100">
                 NO
               </th>
-              <th rowSpan={2} className="border border-slate-300 px-2 py-2 w-24 bg-slate-100">
-                LAB ID
-              </th>
               <th 
                 rowSpan={2} 
-                className="border border-slate-300 px-3 py-2 w-48 bg-emerald-100/90 text-emerald-900 border-b-2 border-b-emerald-600"
+                className="border border-slate-300 px-3 py-2 w-52 bg-emerald-100/90 text-emerald-900 border-b-2 border-b-emerald-600"
               >
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
@@ -273,17 +270,6 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                   {/* Row Number */}
                   <td className="border border-slate-200 px-1 py-1 text-center font-mono text-[11px] text-slate-500 font-bold bg-slate-50">
                     {idx + 1}
-                  </td>
-
-                  {/* LAB ID */}
-                  <td className="border border-slate-200 p-1">
-                    <input
-                      type="text"
-                      value={row.labId}
-                      onChange={(e) => onChangeRow(idx, 'labId', e.target.value)}
-                      placeholder={`L-${String(idx + 1).padStart(3, '0')}`}
-                      className="w-full px-1.5 py-1 text-xs border border-slate-200 rounded focus:border-emerald-500 font-mono text-slate-700"
-                    />
                   </td>
 
                   {/* Titik Sampling (Wajib - Green) */}

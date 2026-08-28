@@ -21,7 +21,6 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
   while (rowsToDisplay.length < totalDisplayRows) {
     rowsToDisplay.push({
       id: `empty-${rowsToDisplay.length}`,
-      labId: '',
       titikSampling: '',
       jam: '',
       koordinatNS: '',
@@ -177,20 +176,12 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
 
         {/* CUSTOMER IDENTIFICATION & CATATAN BOX */}
         <div className="flex gap-2 mb-2 items-stretch">
-          {/* Left: 6 Rows of Customer Metadata (Clean standard official document without green highlight) */}
+          {/* Left: Customer Metadata (Clean standard official document without green highlight) */}
           <div className="w-[65%] border border-black text-[10px]">
             <table className="w-full border-collapse">
               <tbody>
                 <tr className="border-b border-black">
                   <td className="w-40 px-2 py-0.5 font-bold uppercase bg-slate-50 text-slate-900 border-r border-black">
-                    NO. SURAT PENGANTAR
-                  </td>
-                  <td className="px-2 py-0.5 font-medium">
-                    {doc.header.noSuratPengantar || '-'}
-                  </td>
-                </tr>
-                <tr className="border-b border-black">
-                  <td className="px-2 py-0.5 font-bold uppercase bg-slate-50 text-slate-900 border-r border-black">
                     NAMA PELANGGAN
                   </td>
                   <td className="px-2 py-0.5 font-bold">
@@ -253,10 +244,7 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
                 <th rowSpan={2} className="border border-black px-1 py-1 w-6 text-center">
                   No
                 </th>
-                <th rowSpan={2} className="border border-black px-1 py-1 w-16">
-                  LAB ID
-                </th>
-                <th rowSpan={2} className="border border-black px-1.5 py-1 font-bold w-36 bg-slate-50 text-slate-900">
+                <th rowSpan={2} className="border border-black px-1.5 py-1 font-bold w-44 bg-slate-50 text-slate-900">
                   Titik Sampling
                 </th>
                 <th rowSpan={2} className="border border-black px-1 py-1 font-bold w-16 bg-slate-50 text-slate-900">
@@ -321,10 +309,7 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
                     <td className="border border-black px-1 py-0.5 text-center font-mono text-[8.5px]">
                       {idx + 1}
                     </td>
-                    <td className="border border-black px-1 py-0.5 font-mono text-[8.5px] text-left truncate">
-                      {row.labId || ''}
-                    </td>
-                    <td className="border border-black px-1.5 py-0.5 text-left font-medium truncate max-w-[150px]">
+                    <td className="border border-black px-1.5 py-0.5 text-left font-medium truncate max-w-[170px]">
                       {row.titikSampling || ''}
                     </td>
                     <td className="border border-black px-1 py-0.5 font-mono text-[8.5px]">

@@ -39,7 +39,6 @@ const INITIAL_DOC: DatlapDocument = {
   tanggalBerlaku: '24 November 2025',
   halaman: '1 dari 1',
   header: {
-    noSuratPengantar: '',
     namaPelanggan: '',
     alamat: '',
     narahubung: '',
@@ -50,7 +49,6 @@ const INITIAL_DOC: DatlapDocument = {
   rows: [
     {
       id: 'row-1',
-      labId: '',
       titikSampling: '',
       jam: '',
       koordinatNS: '',
@@ -153,9 +151,9 @@ export default function App() {
   };
 
   // Validation calculations
-  const headerMandatoryKeys = ['noSuratPengantar', 'namaPelanggan', 'alamat', 'narahubung', 'tanggal', 'metode'] as const;
+  const headerMandatoryKeys = ['namaPelanggan', 'alamat', 'narahubung', 'tanggal', 'metode'] as const;
   const missingHeaderFields = headerMandatoryKeys.filter(k => !doc.header[k]?.trim());
-  const activeRows = doc.rows.filter(r => r.titikSampling.trim() || r.labId.trim() || r.koordinatNS.trim());
+  const activeRows = doc.rows.filter(r => r.titikSampling.trim() || r.koordinatNS.trim() || r.jam.trim());
   const invalidRows = activeRows.filter(
     r => !r.titikSampling.trim() || !r.jam.trim() || !r.koordinatNS.trim() || !r.koordinatE.trim()
   );
@@ -243,7 +241,7 @@ export default function App() {
   const handleClearEmptyRows = () => {
     setDoc(prev => {
       const filtered = prev.rows.filter(r => 
-        r.titikSampling.trim() || r.labId.trim() || r.koordinatNS.trim() || r.temperatur.trim() || r.pH.trim()
+        r.titikSampling.trim() || r.koordinatNS.trim() || r.jam.trim() || r.temperatur.trim() || r.pH.trim()
       );
       return {
         ...prev,

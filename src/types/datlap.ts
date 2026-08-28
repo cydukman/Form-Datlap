@@ -1,10 +1,9 @@
 export interface HeaderData {
-  noSuratPengantar: string; // Green marker - Wajib
-  namaPelanggan: string;    // Green marker - Wajib
-  alamat: string;           // Green marker - Wajib
-  narahubung: string;       // Green marker - Wajib
-  tanggal: string;          // Green marker - Wajib
-  metode: string;           // Green marker - Wajib
+  namaPelanggan: string;    // Wajib
+  alamat: string;           // Wajib
+  narahubung: string;       // Wajib
+  tanggal: string;          // Wajib
+  metode: string;           // Wajib
   catatan: string;          // Box kanan
 }
 
@@ -23,11 +22,10 @@ export interface InSituParamsConfig {
 
 export interface DatlapRow {
   id: string;
-  labId: string;
-  titikSampling: string;     // Green marker - Wajib
-  jam: string;               // Green marker - Wajib
-  koordinatNS: string;       // Green marker - Wajib (e.g. S 06°12'34.5" or -6.2088)
-  koordinatE: string;        // Green marker - Wajib (e.g. E 106°49'12.3" or 106.8200)
+  titikSampling: string;     // Wajib
+  jam: string;               // Wajib
+  koordinatNS: string;       // Wajib (e.g. S 06°12'34.5" or -6.2088)
+  koordinatE: string;        // Wajib (e.g. E 106°49'12.3" or 106.8200)
   // Parameter In-situ (Menyesuaikan permintaan pengujian customer)
   temperatur: string;        // °C
   pH: string;
@@ -84,7 +82,6 @@ export const DEFAULT_IN_SITU_CONFIG: InSituParamsConfig = {
 };
 
 export const INITIAL_HEADER_DATA: HeaderData = {
-  noSuratPengantar: '',
   namaPelanggan: '',
   alamat: '',
   narahubung: '',
@@ -95,7 +92,6 @@ export const INITIAL_HEADER_DATA: HeaderData = {
 
 export const createEmptyRow = (index: number): DatlapRow => ({
   id: `row-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 4)}`,
-  labId: '',
   titikSampling: '',
   jam: '',
   koordinatNS: '',

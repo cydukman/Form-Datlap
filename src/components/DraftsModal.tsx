@@ -187,9 +187,9 @@ export const DraftsModal: React.FC<DraftsModalProps> = ({
                         {d.header.namaPelanggan || 'Pelanggan Tanpa Nama'}
                       </div>
                       <div className="text-[10px] text-slate-500 font-mono flex items-center gap-2 mt-0.5">
-                        <span>No. SP: {d.header.noSuratPengantar || '-'}</span>
+                        <span>{d.rows.length} Titik Sampling</span>
                         <span>•</span>
-                        <span>{d.rows.length} Titik</span>
+                        <span>{d.header.tanggal || '-'}</span>
                         <span>•</span>
                         <span>{new Date(d.updatedAt || d.createdAt).toLocaleString('id-ID')}</span>
                       </div>
