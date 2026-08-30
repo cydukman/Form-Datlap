@@ -8,8 +8,7 @@ import {
   AlertCircle, 
   Layers, 
   Sliders, 
-  FileText,
-  ChevronRight
+  ChevronRight 
 } from 'lucide-react';
 import { DatlapRow, InSituParamsConfig } from '../types/datlap';
 import { getCurrentGpsPosition } from '../utils/geoUtils';
@@ -133,18 +132,18 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
   const totalCols = 4 + 2 + inSituColsCount + (paramsConfig.showTeknikSampling ? 1 : 0) + 1;
 
   return (
-    <div className="bg-white rounded-lg border border-slate-200 shadow-sm flex flex-col overflow-hidden text-slate-800">
+    <div className="bg-white rounded-xl border border-slate-200 shadow-xs flex flex-col overflow-hidden text-slate-800">
       {/* Table Header Bar */}
-      <div className="p-3 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-2">
-        <div className="flex items-center gap-2">
+      <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-200 flex flex-wrap justify-between items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
             Tabel Data Lapangan & Pengukuran In-Situ
           </h3>
-          <span className="text-[11px] font-mono bg-slate-200 px-2 py-0.5 rounded text-slate-700 font-semibold">
+          <span className="text-[11px] font-mono bg-white px-2 py-0.5 rounded text-slate-700 font-semibold border border-slate-200 shadow-2xs">
             {rows.length} Titik Sampel
           </span>
-          <span className="text-[11px] font-mono bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded font-bold flex items-center gap-1">
+          <span className="text-[11px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded font-bold flex items-center gap-1">
             <Layers className="w-3 h-3 text-emerald-600" />
             {totalForms} Formulir (Maks. 12/Form)
           </span>
@@ -161,16 +160,16 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
 
           <button
             onClick={onOpenParamConfig}
-            className="px-2.5 py-1 text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded flex items-center gap-1 text-xs font-medium transition-colors cursor-pointer"
+            className="px-2.5 py-1 text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded flex items-center gap-1 text-xs font-medium transition-colors cursor-pointer"
             title="Sembunyikan/Tampilkan kolom in-situ yang tidak diuji"
           >
             <Sliders className="w-3 h-3 text-emerald-600" />
-            <span>Kustom Kolom In-Situ</span>
+            <span>Kustom Kolom</span>
           </button>
 
           <button
             onClick={() => onAddMultipleRows(3)}
-            className="px-2.5 py-1 text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded flex items-center gap-1 text-xs font-medium transition-colors cursor-pointer"
+            className="px-2.5 py-1 text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded flex items-center gap-1 text-xs font-medium transition-colors cursor-pointer"
             title="Tambah 3 baris sampel baru sekaligus"
           >
             <Plus className="w-3 h-3 text-emerald-600" />
@@ -179,101 +178,100 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
 
           <button
             onClick={onAddRow}
-            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded flex items-center gap-1.5 text-xs font-semibold shadow-sm transition-colors cursor-pointer"
+            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded flex items-center gap-1.5 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>+ Tambah Titik</span>
+            <span>+ Tambah Baris</span>
           </button>
         </div>
       </div>
 
-      {/* Form Page Tabs (1 Form = 12 Samples) */}
-      <div className="px-3 py-2 bg-slate-100/90 border-b border-slate-200 flex items-center justify-between flex-wrap gap-2 text-xs">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-slate-500 font-semibold text-[11px] mr-1 flex items-center gap-1">
-            <FileText className="w-3.5 h-3.5 text-emerald-600" />
-            Pilih Tampilan Formulir:
-          </span>
+      {/* MULTI-FORM PAGINATION TABS (1 Form = 12 Samples limitation) */}
+      {totalForms > 1 && (
+        <div className="px-3 py-2 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-800 flex items-center gap-1">
+              <Layers className="w-3.5 h-3.5 text-emerald-700" />
+              Navigasi Halaman Formulir:
+            </span>
+            <span className="text-[11px] text-slate-500">
+              (Total {rows.length} sampel dibagi menjadi {totalForms} formulir @ 12 sampel)
+            </span>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => setActivePageTab('all')}
-            className={`px-2.5 py-1 rounded text-xs font-semibold transition-colors cursor-pointer ${
-              activePageTab === 'all'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-300'
-            }`}
-          >
-            Semua Sampel ({rows.length})
-          </button>
+          <div className="flex items-center gap-1 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setActivePageTab('all')}
+              className={`px-2.5 py-1 text-xs rounded font-semibold transition-colors cursor-pointer ${
+                activePageTab === 'all'
+                  ? 'bg-slate-800 text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
+              }`}
+            >
+              Semua ({rows.length})
+            </button>
 
-          {Array.from({ length: totalForms }).map((_, formIdx) => {
-            const formNumber = formIdx + 1;
-            const startNo = formIdx * SAMPLES_PER_FORM + 1;
-            const endNo = Math.min((formIdx + 1) * SAMPLES_PER_FORM, rows.length);
-            const sampleCountInForm = Math.max(0, endNo - startNo + 1);
-            const isFull = sampleCountInForm >= 12;
+            {Array.from({ length: totalForms }).map((_, pIdx) => {
+              const fNum = pIdx + 1;
+              const startSampel = pIdx * SAMPLES_PER_FORM + 1;
+              const endSampel = Math.min((pIdx + 1) * SAMPLES_PER_FORM, rows.length);
+              const isCurrent = activePageTab === fNum;
 
-            return (
-              <button
-                key={formNumber}
-                type="button"
-                onClick={() => setActivePageTab(formNumber)}
-                className={`px-2.5 py-1 rounded text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer ${
-                  activePageTab === formNumber
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-300'
-                }`}
-              >
-                <span>Formulir {formNumber}</span>
-                <span className={`text-[10px] px-1 rounded font-mono ${
-                  activePageTab === formNumber ? 'bg-emerald-700 text-emerald-100' : isFull ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'
-                }`}>
-                  {sampleCountInForm}/12
-                </span>
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={fNum}
+                  type="button"
+                  onClick={() => setActivePageTab(fNum)}
+                  className={`px-2.5 py-1 text-xs rounded font-semibold transition-colors flex items-center gap-1 cursor-pointer ${
+                    isCurrent
+                      ? 'bg-emerald-700 text-white shadow-xs'
+                      : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
+                  }`}
+                >
+                  <span>Formulir {fNum}</span>
+                  <span className={`text-[10px] font-mono px-1 rounded ${
+                    isCurrent ? 'bg-emerald-800 text-emerald-100' : 'bg-slate-100 text-slate-600'
+                  }`}>
+                    {startSampel}-{endSampel}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+      )}
 
-        <div className="text-[11px] text-slate-500 font-medium">
-          {activePageTab === 'all' ? (
-            <span>Menampilkan semua <strong>{rows.length}</strong> titik sampel (terbagi dalam {totalForms} formulir)</span>
-          ) : (
-            <span>Menampilkan <strong>Formulir {activePageTab}</strong> (Sampel {(activePageTab - 1) * SAMPLES_PER_FORM + 1} - {Math.min(activePageTab * SAMPLES_PER_FORM, rows.length)})</span>
-          )}
-        </div>
-      </div>
-
-      {/* Grid Table with Horizontal Scroll for High Density */}
-      <div className="overflow-x-auto max-h-[580px] scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
-        <table className="w-full text-left text-xs border-collapse border border-slate-200 min-w-[1100px]">
-          {/* Main Table Head */}
-          <thead className="bg-slate-100 text-slate-700 font-bold sticky top-0 z-10 border-b-2 border-slate-300 shadow-sm text-[11px]">
-            {/* Top Super-Header */}
-            <tr>
-              <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center w-10 bg-slate-100">
-                NO
+      {/* Main Scrollable Grid Container */}
+      <div className="overflow-x-auto w-full max-h-[600px] select-text">
+        <table className="w-full text-xs text-left border-collapse border border-slate-300">
+          {/* Harmonious Main Table Head */}
+          <thead className="bg-slate-100 text-slate-800 font-bold sticky top-0 z-20 shadow-2xs">
+            {/* Top Level Columns */}
+            <tr className="border-b border-slate-300">
+              <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center w-12 bg-slate-100 text-slate-700">
+                NO.
               </th>
-              <th rowSpan={2} className="border border-slate-300 px-2 py-2 w-28 bg-slate-100 text-slate-800 text-center font-bold">
-                LAB ID
+              <th rowSpan={2} className="border border-slate-300 px-2 py-2 w-32 text-center bg-slate-100 text-slate-700">
+                <div>LAB ID</div>
+                <span className="text-[9px] font-normal text-slate-500 block">(Kode Lab)</span>
               </th>
               <th 
                 rowSpan={2} 
-                className="border border-slate-300 px-3 py-2 w-52 bg-emerald-100/90 text-emerald-900 border-b-2 border-b-emerald-600"
+                className="border border-slate-300 px-3 py-2 w-52 bg-slate-100 text-slate-800"
               >
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
                   <span>TITIK SAMPLING</span>
                   <span className="text-emerald-700 font-extrabold">*</span>
                 </div>
               </th>
               <th 
                 rowSpan={2} 
-                className="border border-slate-300 px-2 py-2 w-36 bg-emerald-100/90 text-emerald-900 border-b-2 border-b-emerald-600"
+                className="border border-slate-300 px-2 py-2 w-36 bg-slate-100 text-slate-800"
               >
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
                   <span>JAM</span>
                   <span className="text-emerald-700 font-extrabold">*</span>
                 </div>
@@ -281,10 +279,10 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
               {/* Titik Koordinat Group */}
               <th 
                 colSpan={2} 
-                className="border border-slate-300 px-2 py-1.5 text-center bg-emerald-100/90 text-emerald-900 border-b-2 border-b-emerald-600"
+                className="border border-slate-300 px-2 py-1.5 text-center bg-slate-100 text-slate-800"
               >
                 <div className="flex items-center justify-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
                   <span>TITIK KOORDINAT</span>
                   <span className="text-emerald-700 font-extrabold">*</span>
                 </div>
@@ -292,59 +290,59 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
               {/* Parameter In-Situ Group */}
               <th 
                 colSpan={inSituColsCount} 
-                className="border border-slate-300 px-2 py-1.5 text-center bg-slate-200 text-slate-800"
+                className="border border-slate-300 px-2 py-1.5 text-center bg-slate-100 text-slate-800"
               >
                 PARAMETER IN-SITU (SESUAI PERMINTAAN PENGUJIAN)
               </th>
               {paramsConfig.showTeknikSampling && (
-                <th rowSpan={2} className="border border-slate-300 px-2 py-2 w-36 bg-slate-100">
+                <th rowSpan={2} className="border border-slate-300 px-2 py-2 w-36 bg-slate-100 text-slate-700">
                   TEKNIK SAMPLING
                 </th>
               )}
-              <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center w-16 bg-slate-100">
+              <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center w-16 bg-slate-100 text-slate-700">
                 AKSI
               </th>
             </tr>
 
             {/* Sub-Header Columns */}
-            <tr className="text-[10px] bg-slate-50 text-slate-600 font-semibold">
-              <th className="border border-slate-300 px-2 py-1.5 w-32 bg-emerald-50 text-emerald-900">
+            <tr className="text-[10px] bg-slate-50 text-slate-700 font-semibold border-b border-slate-300">
+              <th className="border border-slate-300 px-2 py-1.5 w-32 text-slate-700 text-center">
                 N / S
               </th>
-              <th className="border border-slate-300 px-2 py-1.5 w-32 bg-emerald-50 text-emerald-900">
+              <th className="border border-slate-300 px-2 py-1.5 w-32 text-slate-700 text-center">
                 E
               </th>
 
               {/* In-situ sub headers with units */}
               {paramsConfig.showTemperatur && (
                 <th className="border border-slate-300 px-2 py-1.5 w-20 text-center">
-                  Temperatur<br /><span className="text-slate-400 font-normal">(°C)</span>
+                  Temperatur<br /><span className="text-slate-500 font-normal">(°C)</span>
                 </th>
               )}
               {paramsConfig.showPh && (
-                <th className="border border-slate-300 px-2 py-1.5 w-28 text-center bg-emerald-50/40">
-                  <span className="text-emerald-900 font-bold">pH *</span><br />
-                  <span className="text-[9px] text-emerald-700 font-medium">(2 Desimal)</span>
+                <th className="border border-slate-300 px-2 py-1.5 w-28 text-center bg-slate-50">
+                  <span className="text-slate-800 font-bold">pH *</span><br />
+                  <span className="text-[9px] text-slate-500 font-medium">(2 Desimal)</span>
                 </th>
               )}
               {paramsConfig.showKlorinBebas && (
                 <th className="border border-slate-300 px-2 py-1.5 w-24 text-center">
-                  Klorin Bebas<br /><span className="text-slate-400 font-normal">(abs/mg/L)</span>
+                  Klorin Bebas<br /><span className="text-slate-500 font-normal">(abs/mg/L)</span>
                 </th>
               )}
               {paramsConfig.showDo && (
                 <th className="border border-slate-300 px-2 py-1.5 w-20 text-center">
-                  DO<br /><span className="text-slate-400 font-normal">(mg/L)</span>
+                  DO<br /><span className="text-slate-500 font-normal">(mg/L)</span>
                 </th>
               )}
               {paramsConfig.showKecerahan && (
                 <th className="border border-slate-300 px-2 py-1.5 w-20 text-center">
-                  Kecerahan<br /><span className="text-slate-400 font-normal">(m)</span>
+                  Kecerahan<br /><span className="text-slate-500 font-normal">(m)</span>
                 </th>
               )}
               {paramsConfig.showDhl && (
                 <th className="border border-slate-300 px-2 py-1.5 w-24 text-center">
-                  DHL<br /><span className="text-slate-400 font-normal">({paramsConfig.dhlUnit})</span>
+                  DHL<br /><span className="text-slate-500 font-normal">({paramsConfig.dhlUnit})</span>
                 </th>
               )}
               {paramsConfig.showLapisanMinyak && (
@@ -354,7 +352,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
               )}
               {paramsConfig.showKekeruhan && (
                 <th className="border border-slate-300 px-2 py-1.5 w-22 text-center">
-                  Kekeruhan<br /><span className="text-slate-400 font-normal">(NTU)</span>
+                  Kekeruhan<br /><span className="text-slate-500 font-normal">(NTU)</span>
                 </th>
               )}
             </tr>
@@ -406,14 +404,17 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                       )}
                     </td>
 
-                    {/* LAB ID */}
-                    <td className="border border-slate-200 p-1">
+                    {/* LAB ID - Read Only / Disabled / Not Clickable / Blank */}
+                    <td className="border border-slate-200 p-1 bg-slate-50/50">
                       <input
                         type="text"
+                        disabled
+                        readOnly
+                        tabIndex={-1}
                         value={row.labId || ''}
-                        onChange={(e) => onChangeRow(idx, 'labId', e.target.value)}
-                        placeholder={`AKL-26-${String(idx + 1).padStart(4, '0')}`}
-                        className="w-full px-1.5 py-1 text-xs border border-slate-200 rounded focus:border-emerald-500 font-mono text-slate-700 bg-white"
+                        placeholder=""
+                        className="w-full px-2 py-1 text-xs border border-slate-200 rounded font-mono text-slate-500 text-center bg-slate-100/80 cursor-not-allowed select-none pointer-events-none font-medium"
+                        title="Kolom LAB ID dikosongkan (diisi khusus oleh pihak laboratorium)"
                       />
                     </td>
 
@@ -471,7 +472,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                         <button
                           type="button"
                           onClick={() => handleSetCurrentTime(idx)}
-                          className="p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors shrink-0"
+                          className="p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors shrink-0 cursor-pointer"
                           title="Gunakan Jam Sekarang"
                         >
                           <Clock className="w-3.5 h-3.5" />
@@ -499,7 +500,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           type="button"
                           onClick={() => handleFetchGps(idx)}
                           disabled={gpsLoadingRow === idx}
-                          className="absolute right-1 text-slate-400 hover:text-emerald-600 p-1 hover:bg-emerald-50 rounded transition-colors disabled:opacity-50"
+                          className="absolute right-1 text-slate-400 hover:text-emerald-600 p-1 hover:bg-emerald-50 rounded transition-colors disabled:opacity-50 cursor-pointer"
                           title="Ambil GPS Otomatis dari Perangkat"
                         >
                           <MapPin className={`w-3.5 h-3.5 ${gpsLoadingRow === idx ? 'animate-bounce text-emerald-600' : ''}`} />
@@ -537,7 +538,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                       </td>
                     )}
 
-                    {/* pH (Otomatis format 2 desimal saat blur/perubahan) */}
+                    {/* pH (Otomatis format 2 desimal saat blur) */}
                     {paramsConfig.showPh && (
                       <td className="border border-slate-200 p-1 bg-emerald-50/10">
                         <input
@@ -551,8 +552,8 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                             }
                           }}
                           placeholder="7.00"
-                          className="w-full px-1 py-1 text-xs text-center font-bold border border-slate-200 rounded focus:border-emerald-500 font-mono text-emerald-950 bg-white"
-                          title="pH otomatis diformat 2 desimal (contoh: 7 menjadi 7.00)"
+                          className="w-full px-1 py-1 text-xs text-center border border-slate-200 rounded focus:border-emerald-500 font-mono font-semibold text-emerald-900"
+                          title="Ketik angka pH, otomatis diformat 2 desimal saat selesai"
                         />
                       </td>
                     )}
@@ -563,7 +564,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           type="text"
                           value={row.klorinBebas}
                           onChange={(e) => onChangeRow(idx, 'klorinBebas', e.target.value)}
-                          placeholder="0.05"
+                          placeholder="0.02"
                           className="w-full px-1 py-1 text-xs text-center border border-slate-200 rounded focus:border-emerald-500 font-mono"
                         />
                       </td>
@@ -575,7 +576,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           type="text"
                           value={row.doVal}
                           onChange={(e) => onChangeRow(idx, 'doVal', e.target.value)}
-                          placeholder="5.6"
+                          placeholder="6.2"
                           className="w-full px-1 py-1 text-xs text-center border border-slate-200 rounded focus:border-emerald-500 font-mono"
                         />
                       </td>
@@ -587,7 +588,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           type="text"
                           value={row.kecerahan}
                           onChange={(e) => onChangeRow(idx, 'kecerahan', e.target.value)}
-                          placeholder="0.8"
+                          placeholder="1.5"
                           className="w-full px-1 py-1 text-xs text-center border border-slate-200 rounded focus:border-emerald-500 font-mono"
                         />
                       </td>
@@ -599,7 +600,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           type="text"
                           value={row.dhl}
                           onChange={(e) => onChangeRow(idx, 'dhl', e.target.value)}
-                          placeholder="350"
+                          placeholder="450"
                           className="w-full px-1 py-1 text-xs text-center border border-slate-200 rounded focus:border-emerald-500 font-mono"
                         />
                       </td>
@@ -608,9 +609,9 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                     {paramsConfig.showLapisanMinyak && (
                       <td className="border border-slate-200 p-1">
                         <select
-                          value={row.lapisanMinyak}
+                          value={row.lapisanMinyak || 'Tidak Ada'}
                           onChange={(e) => onChangeRow(idx, 'lapisanMinyak', e.target.value)}
-                          className="w-full px-1 py-1 text-xs border border-slate-200 rounded focus:border-emerald-500 bg-white"
+                          className="w-full px-1 py-1 text-[11px] border border-slate-200 rounded focus:border-emerald-500 bg-white cursor-pointer"
                         >
                           {LAPISAN_MINYAK_OPTIONS.map((opt) => (
                             <option key={opt} value={opt}>
@@ -627,48 +628,48 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           type="text"
                           value={row.kekeruhan}
                           onChange={(e) => onChangeRow(idx, 'kekeruhan', e.target.value)}
-                          placeholder="1.2"
+                          placeholder="5.4"
                           className="w-full px-1 py-1 text-xs text-center border border-slate-200 rounded focus:border-emerald-500 font-mono"
                         />
                       </td>
                     )}
 
-                    {/* Teknik Sampling */}
                     {paramsConfig.showTeknikSampling && (
                       <td className="border border-slate-200 p-1">
                         <select
-                          value={row.teknikSampling}
+                          value={row.teknikSampling || 'Grab Sample (Sesaat)'}
                           onChange={(e) => onChangeRow(idx, 'teknikSampling', e.target.value)}
-                          className="w-full px-1.5 py-1 text-xs border border-slate-200 rounded focus:border-emerald-500 bg-white"
+                          className="w-full px-1 py-1 text-[11px] border border-slate-200 rounded focus:border-emerald-500 bg-white cursor-pointer"
                         >
-                          {TEKNIK_OPTIONS.map((t) => (
-                            <option key={t} value={t}>
-                              {t}
+                          {TEKNIK_OPTIONS.map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt}
                             </option>
                           ))}
                         </select>
                       </td>
                     )}
 
-                    {/* Actions Column */}
-                    <td className="border border-slate-200 p-1 text-center bg-slate-50">
+                    {/* Actions: Duplicate & Delete */}
+                    <td className="border border-slate-200 px-1 py-1 text-center bg-slate-50/50">
                       <div className="flex items-center justify-center gap-1">
                         <button
                           type="button"
                           onClick={() => onDuplicateRow(idx)}
-                          className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded transition-colors"
-                          title="Duplikasi Baris"
+                          className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition-colors cursor-pointer"
+                          title="Duplikasi Baris Ini"
                         >
-                          <Copy className="w-3 h-3" />
+                          <Copy className="w-3.5 h-3.5" />
                         </button>
+
                         <button
                           type="button"
                           onClick={() => onRemoveRow(idx)}
                           disabled={rows.length <= 1}
-                          className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-30"
-                          title="Hapus Baris"
+                          className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                          title="Hapus Baris Ini"
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </td>
@@ -680,37 +681,36 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
         </table>
       </div>
 
-      {/* Table Footer Toolbar */}
-      <div className="p-2.5 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center text-xs text-slate-600 gap-2">
-        <div className="text-[11px] text-slate-500 font-medium flex items-center gap-3">
-          <span>Total Baris Sampel: <strong className="text-slate-800">{rows.length}</strong></span>
+      {/* Table Footer Controls */}
+      <div className="p-2.5 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2 text-xs">
+        <div className="flex items-center gap-2 text-slate-600 font-medium">
+          <span>
+            Total Baris Sampel: <strong className="text-slate-800">{rows.length}</strong>
+          </span>
           <span>•</span>
-          <span>Formulir Terbentuk: <strong className="text-emerald-700">{totalForms} Halaman</strong> (1 Form = 12 Sampel)</span>
+          <span>
+            Formulir Terbentuk: <strong className="text-emerald-700">{totalForms} Halaman</strong> (1 Form = 12 Sampel)
+          </span>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex items-center gap-3 flex-wrap">
           <button
+            type="button"
             onClick={onClearEmptyRows}
-            className="text-[11px] text-slate-500 hover:text-slate-800 underline px-2 py-1 cursor-pointer"
+            className="text-slate-600 hover:text-red-700 text-xs hover:underline cursor-pointer transition-colors"
+            title="Bersihkan baris kosong yang belum terisi"
           >
             Bersihkan Baris Kosong
           </button>
+
           <button
+            type="button"
             onClick={onAddRow}
-            className="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded text-xs transition-colors flex items-center gap-1 cursor-pointer"
+            className="px-3 py-1 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
           >
-            <Plus className="w-3 h-3" />
-            <span>Tambah Baris</span>
+            <Plus className="w-3.5 h-3.5 text-slate-600" />
+            <span>+ Tambah Baris</span>
           </button>
-          {rows.length % SAMPLES_PER_FORM === 0 && (
-            <button
-              onClick={onAddRow}
-              className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-xs transition-colors flex items-center gap-1 shadow-sm cursor-pointer"
-              title="Mulai form baru (halaman berikutnya)"
-            >
-              <Plus className="w-3 h-3" />
-              <span>Mulai Form Baru (+ Sampel 13+)</span>
-            </button>
-          )}
         </div>
       </div>
     </div>

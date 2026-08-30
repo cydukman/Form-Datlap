@@ -25,33 +25,33 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
   const isMissing = (val: string) => !val.trim();
 
   return (
-    <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-4 text-slate-800">
+    <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden text-slate-800">
       {/* Section Header */}
-      <div className="flex justify-between items-center pb-3 mb-3 border-b border-slate-100">
+      <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-200 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800">
             Identitas Pelanggan & Informasi Pengambilan Uji
           </h2>
         </div>
-        <span className="text-[11px] text-slate-600 font-medium bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-          Informasi Formulir
+        <span className="text-[11px] text-slate-600 font-medium bg-white px-2.5 py-0.5 rounded border border-slate-200 shadow-2xs">
+          Bagian Atas Formulir
         </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left Side: Mandatory Rows replicating the ANKAL Form Header */}
         <div className="lg:col-span-8 space-y-2.5">
           {/* Row 1: Nama Pelanggan */}
-          <div className={`p-1.5 rounded transition-all ${
-            highlightWajibOnly ? 'bg-emerald-50/60 ring-1 ring-emerald-300' : ''
+          <div className={`p-1 rounded-lg transition-all ${
+            highlightWajibOnly ? 'bg-amber-50/60 ring-1 ring-amber-300' : ''
           }`}>
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <label 
                 htmlFor="namaPelanggan"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-4 border-emerald-500 pl-2 bg-emerald-50/70 py-1 rounded-r"
+                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r"
               >
-                <User className="w-3 h-3 text-emerald-600 shrink-0" />
+                <User className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>NAMA PELANGGAN</span>
                 <span className="text-emerald-700 font-extrabold">*</span>
               </label>
@@ -77,16 +77,16 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
             </div>
           </div>
 
-          {/* Row 3: Alamat */}
-          <div className={`p-1.5 rounded transition-all ${
-            highlightWajibOnly ? 'bg-emerald-50/60 ring-1 ring-emerald-300' : ''
+          {/* Row 2: Alamat */}
+          <div className={`p-1 rounded-lg transition-all ${
+            highlightWajibOnly ? 'bg-amber-50/60 ring-1 ring-amber-300' : ''
           }`}>
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <label 
                 htmlFor="alamat"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-4 border-emerald-500 pl-2 bg-emerald-50/70 py-1 rounded-r"
+                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r"
               >
-                <MapPin className="w-3 h-3 text-emerald-600 shrink-0" />
+                <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>ALAMAT</span>
                 <span className="text-emerald-700 font-extrabold">*</span>
               </label>
@@ -112,16 +112,16 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
             </div>
           </div>
 
-          {/* Row 4: Narahubung */}
-          <div className={`p-1.5 rounded transition-all ${
-            highlightWajibOnly ? 'bg-emerald-50/60 ring-1 ring-emerald-300' : ''
+          {/* Row 3: Narahubung */}
+          <div className={`p-1 rounded-lg transition-all ${
+            highlightWajibOnly ? 'bg-amber-50/60 ring-1 ring-amber-300' : ''
           }`}>
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <label 
                 htmlFor="narahubung"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-4 border-emerald-500 pl-2 bg-emerald-50/70 py-1 rounded-r"
+                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r"
               >
-                <Phone className="w-3 h-3 text-emerald-600 shrink-0" />
+                <Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>NARAHUBUNG</span>
                 <span className="text-emerald-700 font-extrabold">*</span>
               </label>
@@ -147,16 +147,16 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
             </div>
           </div>
 
-          {/* Row 5: Tanggal Sampling */}
-          <div className={`p-1.5 rounded transition-all ${
-            highlightWajibOnly ? 'bg-emerald-50/60 ring-1 ring-emerald-300' : ''
+          {/* Row 4: Tanggal Sampling */}
+          <div className={`p-1 rounded-lg transition-all ${
+            highlightWajibOnly ? 'bg-amber-50/60 ring-1 ring-amber-300' : ''
           }`}>
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <label 
                 htmlFor="tanggal"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-4 border-emerald-500 pl-2 bg-emerald-50/70 py-1 rounded-r"
+                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r"
               >
-                <Calendar className="w-3 h-3 text-emerald-600 shrink-0" />
+                <Calendar className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>TANGGAL SAMPLING</span>
                 <span className="text-emerald-700 font-extrabold">*</span>
               </label>
@@ -180,16 +180,16 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
             </div>
           </div>
 
-          {/* Row 6: Metode Sampling */}
-          <div className={`p-1.5 rounded transition-all ${
-            highlightWajibOnly ? 'bg-emerald-50/60 ring-1 ring-emerald-300' : ''
+          {/* Row 5: Metode Sampling */}
+          <div className={`p-1 rounded-lg transition-all ${
+            highlightWajibOnly ? 'bg-amber-50/60 ring-1 ring-amber-300' : ''
           }`}>
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <label 
                 htmlFor="metode"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-4 border-emerald-500 pl-2 bg-emerald-50/70 py-1 rounded-r"
+                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r"
               >
-                <BookOpen className="w-3 h-3 text-emerald-600 shrink-0" />
+                <BookOpen className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>METODE</span>
                 <span className="text-emerald-700 font-extrabold">*</span>
               </label>
@@ -230,21 +230,23 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
 
         {/* Right Side: Catatan Box (Matching ANKAL Box Layout) */}
         <div className="lg:col-span-4 flex flex-col">
-          <div className="bg-slate-50 rounded border border-slate-300 p-3 h-full flex flex-col">
-            <label 
-              htmlFor="catatanHeader"
-              className="text-[11px] font-bold text-slate-700 uppercase flex items-center justify-between pb-1 mb-1 border-b border-slate-200"
-            >
-              <span>Catatan:</span>
-              <span className="text-[10px] font-normal text-slate-500">(Opsional)</span>
-            </label>
-            <textarea
-              id="catatanHeader"
-              value={header.catatan}
-              onChange={(e) => onChange('catatan', e.target.value)}
-              placeholder="Catatan tambahan dari pelanggan / petunjuk pengiriman sampel / permintaan pengawetan khusus..."
-              className="w-full flex-1 min-h-[140px] text-xs p-2 bg-white rounded border border-slate-300 focus:border-emerald-500 resize-none"
-            />
+          <div className="bg-slate-50/70 rounded-lg border border-slate-200 p-3 h-full flex flex-col justify-between">
+            <div>
+              <label 
+                htmlFor="catatanHeader"
+                className="text-[11px] font-bold text-slate-700 uppercase flex items-center justify-between pb-1.5 mb-2 border-b border-slate-200"
+              >
+                <span>Catatan Tambahan:</span>
+                <span className="text-[10px] font-normal text-slate-500">(Opsional)</span>
+              </label>
+              <textarea
+                id="catatanHeader"
+                value={header.catatan}
+                onChange={(e) => onChange('catatan', e.target.value)}
+                placeholder="Catatan tambahan dari pelanggan / petunjuk pengiriman sampel / permintaan pengawetan khusus..."
+                className="w-full min-h-[140px] text-xs p-2.5 bg-white rounded border border-slate-300 focus:border-emerald-500 resize-none font-medium text-slate-800"
+              />
+            </div>
             <p className="text-[10px] text-slate-500 mt-2 leading-relaxed italic">
               * Formulir ini merupakan dokumen resmi pendukung Laporan Hasil Uji (LHU) laboratorium ANKAL.
             </p>

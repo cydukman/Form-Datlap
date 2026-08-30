@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { DatlapDocument } from '../types/datlap';
-import { Printer, ArrowLeft, Download, FileDown, Loader2, CheckCircle2, Info, FileSpreadsheet, Layers } from 'lucide-react';
+import { Printer, ArrowLeft, Download, FileDown, Info, FileSpreadsheet, Layers } from 'lucide-react';
 import { exportToCSV, exportToExcel, exportToPDF, triggerPrintDialog } from '../utils/exportUtils';
 import { formatPhValue } from '../utils/phUtils';
 
@@ -11,120 +11,14 @@ interface OfficialPrintViewProps {
 
 const SAMPLES_PER_FORM = 12;
 
-export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
-  doc,
-  onBackToEditor,
-}) => {
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [pdfSuccess, setPdfSuccess] = useState(false);
-
-  // 1 Form = 12 Samples limitation
+/**
+ * Renders the actual printable sheets for all pages (1 Form = 12 Samples)
+ */
+export const OfficialFormPages: React.FC<{ doc: DatlapDocument }> = ({ doc }) => {
   const totalPages = Math.max(1, Math.ceil(doc.rows.length / SAMPLES_PER_FORM));
 
-  const handleDownloadPDF = async () => {
-    setIsGeneratingPDF(true);
-    setPdfSuccess(false);
-    try {
-      const success = await exportToPDF(doc, 'official-form-page');
-      if (success) {
-        setPdfSuccess(true);
-        setTimeout(() => setPdfSuccess(false), 4000);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsGeneratingPDF(false);
-    }
-  };
-
   return (
-    <div className="flex-1 bg-slate-900 overflow-y-auto p-4 md:p-6 text-slate-900 flex flex-col items-center">
-      {/* Top action bar when in preview screen (Hidden when printing) */}
-      <div className="w-full max-w-5xl mb-3 bg-slate-800 text-white p-3 rounded-lg border border-slate-700 shadow-md flex flex-wrap justify-between items-center gap-3 no-print">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onBackToEditor}
-            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Kembali ke Editor</span>
-          </button>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-slate-300 font-medium">
-              Pratinjau Format Resmi ANKAL (AKL-FO-7.3-36)
-            </span>
-            <span className="text-[11px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-700/60 px-2 py-0.5 rounded font-bold flex items-center gap-1">
-              <Layers className="w-3 h-3" />
-              {totalPages} Formulir ({doc.rows.length} Sampel • 12/Form)
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={() => exportToExcel(doc)}
-            className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
-            title="Download formulir resmi lengkap dalam format Microsoft Excel (.xlsx)"
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-200" />
-            <span>Export Excel (.xlsx)</span>
-          </button>
-
-          <button
-            onClick={() => exportToCSV(doc)}
-            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Download data tabel dalam format spreadsheet CSV"
-          >
-            <Download className="w-3.5 h-3.5 text-sky-400" />
-            <span>Export CSV</span>
-          </button>
-
-          <button
-            onClick={triggerPrintDialog}
-            className="px-3.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-600 cursor-pointer"
-            title="Cetak langsung ke mesin printer fisik atau gunakan dialog cetak browser"
-          >
-            <Printer className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Cetak Printer</span>
-          </button>
-
-          <button
-            onClick={handleDownloadPDF}
-            disabled={isGeneratingPDF}
-            className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white rounded-md text-xs font-bold shadow-md flex items-center gap-2 transition-colors cursor-pointer"
-            title="Download dokumen formulir ini sebagai file .PDF resmi langsung ke perangkat"
-          >
-            {isGeneratingPDF ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin text-white" />
-                <span>Membuat File PDF...</span>
-              </>
-            ) : pdfSuccess ? (
-              <>
-                <CheckCircle2 className="w-4 h-4 text-white" />
-                <span>PDF Terunduh!</span>
-              </>
-            ) : (
-              <>
-                <FileDown className="w-4 h-4 text-white" />
-                <span>Unduh File PDF Resmi (.pdf)</span>
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Helper Banner */}
-      <div className="w-full max-w-5xl mb-4 bg-sky-950/70 border border-sky-600/40 text-sky-200 text-xs px-3 py-2 rounded flex items-center justify-between no-print gap-2">
-        <div className="flex items-center gap-2">
-          <Info className="w-4 h-4 text-sky-400 shrink-0" />
-          <span>
-            <strong>Standar Formulir ANKAL:</strong> Kapasitas 1 formulir adalah <strong>12 sampel</strong>. Dokumen Anda otomatis diatur menjadi <strong>{totalPages} formulir/halaman</strong> ({doc.rows.length} total sampel).
-          </span>
-        </div>
-      </div>
-
-      {/* Render Each Form Page (1 Form = 12 Samples) */}
+    <>
       {Array.from({ length: totalPages }).map((_, pageIdx) => {
         const pageStart = pageIdx * SAMPLES_PER_FORM;
         const pageEnd = pageStart + SAMPLES_PER_FORM;
@@ -145,7 +39,7 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
           <div
             key={`page-${pageIdx}`}
             id={pageIdx === 0 ? 'official-form-sheet' : `official-form-sheet-${pageIdx}`}
-            className="official-form-page w-full max-w-5xl bg-white p-4 md:p-6 rounded shadow-xl border border-slate-300 print-container font-sans text-[11px] leading-tight mb-8 last:mb-0 page-break"
+            className="official-form-page w-full max-w-5xl bg-white p-4 md:p-6 rounded shadow-xl border border-slate-300 print-container font-sans text-[11px] leading-tight mb-8 last:mb-0 page-break text-slate-900"
             style={{ minHeight: '680px' }}
           >
             {/* Page Header Indicator (screen only) */}
@@ -157,7 +51,7 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
             )}
 
             {/* DOCUMENT HEADER BOX (Matching exact ANKAL 3-Column Header) */}
-            <div className="border border-black flex mb-2">
+            <div className="border border-black flex mb-2 bg-white">
               {/* Logo ANKAL Box */}
               <div className="w-[18%] border-r border-black p-2 flex items-center justify-center bg-white">
                 <span className="text-2xl font-black tracking-tighter text-emerald-600 font-sans">
@@ -204,7 +98,7 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
             {/* CUSTOMER IDENTIFICATION & CATATAN BOX */}
             <div className="flex gap-2 mb-2 items-stretch">
               {/* Left: Customer Metadata */}
-              <div className="w-[65%] border border-black text-[10px]">
+              <div className="w-[65%] border border-black text-[10px] bg-white">
                 <table className="w-full border-collapse">
                   <tbody>
                     <tr className="border-b border-black">
@@ -252,7 +146,7 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
               </div>
 
               {/* Right: Catatan Box */}
-              <div className="w-[35%] border border-black p-1.5 flex flex-col justify-between text-[10px]">
+              <div className="w-[35%] border border-black p-1.5 flex flex-col justify-between text-[10px] bg-white">
                 <div>
                   <span className="font-bold">Catatan:</span>
                   <p className="mt-1 text-slate-800 whitespace-pre-wrap leading-tight text-[9.5px]">
@@ -263,7 +157,7 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
             </div>
 
             {/* MAIN DATA LAPANGAN TABLE (Exactly 12 Rows per Form) */}
-            <div className="mb-2 overflow-hidden">
+            <div className="mb-2 overflow-hidden bg-white">
               <table className="w-full border-collapse border border-black text-center text-[9px] official-form-table">
                 <thead>
                   {/* Main Column Headers */}
@@ -390,7 +284,7 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
             {/* BOTTOM 3 BOXES (Matching Form: Denah Lokasi, Kondisi Lingkungan/Cuaca, Diverifikasi Oleh) */}
             <div className="grid grid-cols-12 gap-2 text-[9.5px]">
               {/* Box 1: Denah Lokasi dan Titik Pengambilan Contoh Uji */}
-              <div className="col-span-5 border border-black p-1.5 flex flex-col min-h-[95px]">
+              <div className="col-span-5 border border-black p-1.5 flex flex-col min-h-[95px] bg-white">
                 <span className="font-bold text-[9px]">Denah Lokasi dan Titik Pengambilan Contoh Uji:</span>
                 <div className="flex-1 flex items-center justify-center mt-1 overflow-hidden">
                   {doc.footer.denahType === 'sketch' && doc.footer.denahDataUrl ? (
@@ -414,7 +308,7 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
               </div>
 
               {/* Box 2: Kondisi Lingkungan/Cuaca */}
-              <div className="col-span-4 border border-black p-1.5 flex flex-col min-h-[95px]">
+              <div className="col-span-4 border border-black p-1.5 flex flex-col min-h-[95px] bg-white">
                 <span className="font-bold text-[9px]">Kondisi Lingkungan/Cuaca:</span>
                 <p className="flex-1 text-[9px] text-slate-800 mt-1 whitespace-pre-wrap leading-tight">
                   {doc.footer.kondisiLingkunganCuaca || '-'}
@@ -422,7 +316,7 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
               </div>
 
               {/* Box 3: Diverifikasi oleh */}
-              <div className="col-span-3 border border-black p-1.5 flex flex-col justify-between min-h-[95px] text-center">
+              <div className="col-span-3 border border-black p-1.5 flex flex-col justify-between min-h-[95px] text-center bg-white">
                 <span className="font-bold text-[9px] text-left">Diverifikasi oleh,</span>
                 
                 <div className="flex items-center justify-center my-0.5 h-9">
@@ -450,6 +344,101 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
           </div>
         );
       })}
+    </>
+  );
+};
+
+export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
+  doc,
+  onBackToEditor,
+}) => {
+  // 1 Form = 12 Samples limitation
+  const totalPages = Math.max(1, Math.ceil(doc.rows.length / SAMPLES_PER_FORM));
+
+  const handleDownloadPDF = async () => {
+    try {
+      await exportToPDF(doc, 'official-form-page');
+    } catch (e) {
+      console.error('PDF export error:', e);
+    }
+  };
+
+  return (
+    <div className="flex-1 bg-slate-900 overflow-y-auto p-4 md:p-6 text-slate-900 flex flex-col items-center">
+      {/* Top action bar when in preview screen (Hidden when printing) */}
+      <div className="w-full max-w-5xl mb-3 bg-slate-800 text-white p-3 rounded-lg border border-slate-700 shadow-md flex flex-wrap justify-between items-center gap-3 no-print">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onBackToEditor}
+            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Kembali ke Editor</span>
+          </button>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-slate-300 font-medium">
+              Pratinjau Format Resmi ANKAL (AKL-FO-7.3-36)
+            </span>
+            <span className="text-[11px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-700/60 px-2 py-0.5 rounded font-bold flex items-center gap-1">
+              <Layers className="w-3 h-3" />
+              {totalPages} Formulir ({doc.rows.length} Sampel • 12/Form)
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => exportToExcel(doc)}
+            className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+            title="Download formulir resmi lengkap dalam format Microsoft Excel (.xlsx)"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-200" />
+            <span>Export Excel</span>
+          </button>
+
+          <button
+            onClick={() => exportToCSV(doc)}
+            className="px-3.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="Download data tabel dalam format spreadsheet CSV"
+          >
+            <Download className="w-3.5 h-3.5 text-sky-400" />
+            <span>Export CSV</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => triggerPrintDialog(doc)}
+            className="px-3.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-600 cursor-pointer"
+            title="Cetak langsung ke mesin printer fisik atau simpan via PDF"
+          >
+            <Printer className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Cetak</span>
+          </button>
+
+          <button
+            onClick={handleDownloadPDF}
+            className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md text-xs font-bold shadow-md flex items-center gap-2 transition-colors cursor-pointer"
+            title="Download dokumen formulir ini sebagai file .PDF resmi langsung ke perangkat"
+          >
+            <FileDown className="w-4 h-4 text-white" />
+            <span>Unduh PDF Resmi</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Helper Banner */}
+      <div className="w-full max-w-5xl mb-4 bg-sky-950/70 border border-sky-600/40 text-sky-200 text-xs px-3 py-2 rounded flex items-center justify-between no-print gap-2">
+        <div className="flex items-center gap-2">
+          <Info className="w-4 h-4 text-sky-400 shrink-0" />
+          <span>
+            <strong>Standar Formulir ANKAL:</strong> Kapasitas 1 formulir adalah <strong>12 sampel</strong>. Dokumen Anda otomatis diatur menjadi <strong>{totalPages} formulir/halaman</strong> ({doc.rows.length} total sampel).
+          </span>
+        </div>
+      </div>
+
+      {/* Render All Form Pages */}
+      <OfficialFormPages doc={doc} />
     </div>
   );
 };
+

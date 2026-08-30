@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 @layer base {
-  body {
+  html, body {
+    background-color: #f8fafc;
+    color: #0f172a;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
   code, kbd, samp, pre, .font-mono {
@@ -27,23 +29,62 @@
 }
 
 /* Print layout for exact AKL-FO-7.3-36 formulir */
+.offscreen-printable-sheet {
+  position: fixed;
+  left: -99999px;
+  top: 0;
+  width: 1050px;
+  opacity: 1;
+  pointer-events: none;
+  z-index: -9999;
+}
+
 @media print {
   @page {
     size: A4 landscape;
-    margin: 8mm 6mm 8mm 6mm;
+    margin: 6mm;
   }
-  body {
-    background: white !important;
-    color: black !important;
-    font-size: 8pt;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  html, body, #root, div {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-size: 9pt;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
   }
-  .no-print {
+  .no-print, header, footer {
     display: none !important;
   }
   .print-only {
     display: block !important;
+  }
+  .offscreen-printable-sheet {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: auto !important;
+    display: block !important;
+  }
+  .official-form-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto 20px auto !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+  .official-form-page:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    margin-bottom: 0 !important;
   }
   .print-container {
     width: 100% !important;

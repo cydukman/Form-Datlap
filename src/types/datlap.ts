@@ -1,3 +1,20 @@
+export type UserRole = 'customer' | 'admin';
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  companyName: string;
+  address: string;
+  contactPerson: string;
+  phone: string;
+  defaultMethod: string;
+  defaultVerifierName: string;
+  defaultVerifierTitle: string;
+  avatarColor?: string;
+}
+
 export interface HeaderData {
   namaPelanggan: string;    // Wajib
   alamat: string;           // Wajib
@@ -22,7 +39,7 @@ export interface InSituParamsConfig {
 
 export interface DatlapRow {
   id: string;
-  labId: string;             // Kode Laboratorium (contoh: AKL-26-0811)
+  labId: string;             // Kode Laboratorium (contoh: AKL-26-0811) - Diisi oleh Super Admin / Lab
   titikSampling: string;     // Wajib
   jam: string;               // Wajib
   koordinatNS: string;       // Wajib (e.g. S 06°12'34.5" or -6.2088)
@@ -52,8 +69,13 @@ export interface FooterData {
   };
 }
 
+export type DocumentStatus = 'draft' | 'submitted_to_lab' | 'archived';
+
 export interface DatlapDocument {
   id: string;
+  userId: string;            // ID User/Customer pembuat dokumen
+  userEmail: string;
+  userNamaPelanggan: string;
   docCode: string;           // AKL-FO-7.3-36
   docTitle: string;          // PENGAMBILAN CONTOH UJI AIR OLEH PELANGGAN
   tanggalTerbit: string;     // 24 November 2025
@@ -66,7 +88,10 @@ export interface DatlapDocument {
   footer: FooterData;
   updatedAt: string;
   createdAt: string;
-  status: 'draft' | 'verified' | 'submitted';
+  status: DocumentStatus;    // 'draft' (customer) | 'submitted_to_lab' (menunggu lab ID) | 'archived' (selesai di arsip)
+  submittedAt?: string;
+  archivedAt?: string;
+  adminNotes?: string;
 }
 
 export const DEFAULT_IN_SITU_CONFIG: InSituParamsConfig = {

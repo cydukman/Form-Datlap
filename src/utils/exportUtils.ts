@@ -1,6 +1,7 @@
 import { DatlapDocument } from '../types/datlap';
 import jsPDF from 'jspdf';
 import { toPng } from 'html-to-image';
+import html2canvas from 'html2canvas';
 import ExcelJS from 'exceljs';
 import { formatPhValue } from './phUtils';
 
@@ -454,12 +455,25 @@ export async function exportToPDF(
         pdf.addPage('a4', 'landscape');
       }
 
-      const imgData = await toPng(element, {
-        quality: 0.98,
-        pixelRatio: 2.5, // Crisp high-DPI rendering for fine borders and text
-        backgroundColor: '#ffffff',
-        cacheBust: true,
-      });
+      let imgData: string;
+      try {
+        imgData = await toPng(element, {
+          quality: 0.98,
+          pixelRatio: 2.2, // Crisp high-DPI rendering for fine borders and text
+          backgroundColor: '#ffffff',
+          cacheBust: false,
+          skipFonts: true, // Prevents reading cross-origin CSSStyleSheet rules (Google Fonts)
+        });
+      } catch (toPngErr) {
+        console.warn('html-to-image toPng failed, falling back to html2canvas:', toPngErr);
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          logging: false,
+        });
+        imgData = canvas.toDataURL('image/png', 0.98);
+      }
 
       const imgProps = pdf.getImageProperties(imgData);
       const aspect = imgProps.width / imgProps.height;
@@ -490,10 +504,22 @@ export async function exportToPDF(
   }
 }
 
-export function triggerPrintDialog(): void {
+export async function triggerPrintDialog(doc?: DatlapDocument, targetClass: string = 'official-form-page'): Promise<void> {
+  const isInIframe = window.self !== window.top;
+
   try {
+    // Attempt standard browser print dialog
     window.print();
   } catch (e) {
-    console.error('Error invoking window.print:', e);
+    console.warn('Direct window.print() was blocked or failed:', e);
+  }
+
+  // If in an iframe or if document data is provided, provide guaranteed printing via PDF export
+  if (doc) {
+    try {
+      await exportToPDF(doc, targetClass);
+    } catch (pdfErr) {
+      console.error('PDF export print fallback failed:', pdfErr);
+    }
   }
 }

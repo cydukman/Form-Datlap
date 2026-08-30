@@ -7,7 +7,7 @@ import { SignaturePad } from './components/SignaturePad';
 import { ParamConfigModal } from './components/ParamConfigModal';
 import { TemplatesModal } from './components/TemplatesModal';
 import { DraftsModal } from './components/DraftsModal';
-import { OfficialPrintView } from './components/OfficialPrintView';
+import { OfficialPrintView, OfficialFormPages } from './components/OfficialPrintView';
 import { 
   DatlapDocument, 
   DatlapRow, 
@@ -17,105 +17,146 @@ import {
 } from './types/datlap';
 import { exportToCSV, exportToExcel, exportToJSON, exportToPDF, triggerPrintDialog } from './utils/exportUtils';
 import { 
-  FileSpreadsheet, 
-  ShieldCheck, 
   Sparkles, 
   CheckCircle, 
   AlertTriangle, 
-  RefreshCw,
-  CloudSun,
-  Save,
-  FileDown,
-  Printer,
-  Eye
+  RefreshCw, 
+  CloudSun, 
+  Save, 
+  Eye, 
+  Layers,
+  FileText,
+  CheckCircle2,
+  ArrowRight
 } from 'lucide-react';
 
-const INITIAL_DOC: DatlapDocument = {
-  id: 'doc-initial',
-  docCode: 'AKL-FO-7.3-36',
-  docTitle: 'PENGAMBILAN CONTOH UJI AIR OLEH PELANGGAN',
-  tanggalTerbit: '24 November 2025',
-  terbitRevisi: '3/0',
-  tanggalBerlaku: '24 November 2025',
-  halaman: '1 dari 1',
-  header: {
-    namaPelanggan: '',
-    alamat: '',
-    narahubung: '',
-    tanggal: new Date().toISOString().split('T')[0],
-    metode: '',
-    catatan: '',
-  },
-  rows: [
+const STORAGE_KEY_CURRENT_FORM = 'ankal_datlap_current_form_v2';
+
+const createDefaultDocument = (): DatlapDocument => {
+  const initialRows: DatlapRow[] = [
     {
       id: 'row-1',
       labId: '',
-      titikSampling: '',
-      jam: '',
-      koordinatNS: '',
-      koordinatE: '',
-      temperatur: '',
-      pH: '',
+      titikSampling: 'Inlet IPAL (Sebelum Pengolahan)',
+      jam: '09:15 WIB',
+      koordinatNS: 'S 06°15\'22.4"',
+      koordinatE: 'E 106°48\'35.1"',
+      temperatur: '28.4',
+      pH: '7.15',
+      klorinBebas: '0.02',
+      doVal: '5.8',
+      kecerahan: '1.2',
+      dhl: '450',
+      lapisanMinyak: 'Tidak Ada',
+      kekeruhan: '4.5',
+      teknikSampling: 'Grab Sample (Sesaat)',
+    },
+    {
+      id: 'row-2',
+      labId: '',
+      titikSampling: 'Outlet WWTP / IPAL (Effluent)',
+      jam: '09:45 WIB',
+      koordinatNS: 'S 06°15\'28.1"',
+      koordinatE: 'E 106°48\'39.0"',
+      temperatur: '27.8',
+      pH: '7.42',
+      klorinBebas: '0.01',
+      doVal: '6.4',
+      kecerahan: '2.5',
+      dhl: '380',
+      lapisanMinyak: 'Tidak Ada',
+      kekeruhan: '2.1',
+      teknikSampling: 'Grab Sample (Sesaat)',
+    },
+    {
+      id: 'row-3',
+      labId: '',
+      titikSampling: 'Sumur Pantau 1 (Up-gradient)',
+      jam: '10:30 WIB',
+      koordinatNS: 'S 06°15\'10.5"',
+      koordinatE: 'E 106°48\'20.2"',
+      temperatur: '26.5',
+      pH: '6.85',
       klorinBebas: '',
-      doVal: '',
+      doVal: '4.2',
       kecerahan: '',
-      dhl: '',
-      lapisanMinyak: '',
-      kekeruhan: '',
-      teknikSampling: '',
+      dhl: '290',
+      lapisanMinyak: 'Tidak Ada',
+      kekeruhan: '1.2',
+      teknikSampling: 'Grab Sample (Sesaat)',
     },
-  ],
-  paramsConfig: DEFAULT_IN_SITU_CONFIG,
-  footer: {
-    denahType: 'sketch',
-    denahDataUrl: '',
-    denahText: '',
-    kondisiLingkunganCuaca: '',
-    diverifikasiOleh: {
-      nama: '',
-      jabatan: '',
+  ];
+
+  return {
+    id: `doc-${Date.now()}`,
+    userId: 'default-user',
+    userEmail: 'pelanggan@ankal.co.id',
+    userNamaPelanggan: 'PT. Contoh Industri Lestari (Dummy)',
+    docCode: 'AKL-FO-7.3-36',
+    docTitle: 'PENGAMBILAN CONTOH UJI AIR OLEH PELANGGAN',
+    tanggalTerbit: '24 November 2025',
+    terbitRevisi: '3/0',
+    tanggalBerlaku: '24 November 2025',
+    halaman: '1 dari 1',
+    header: {
+      ...INITIAL_HEADER_DATA,
+      namaPelanggan: 'PT. Contoh Industri Lestari (Dummy)',
+      alamat: 'Kawasan Industri Fiktif Blok A-1 No. 8, Cikarang, Jawa Barat',
+      narahubung: 'Bpk. Fajar Pratama (0812-0000-1111)',
       tanggal: new Date().toISOString().split('T')[0],
-      signatureDataUrl: '',
+      metode: 'SNI 6989.57:2008 (Metode Pengambilan Contoh Air Permukaan)',
+      catatan: 'Pengambilan sampel rutin bulanan outlet IPAL dan sumur pantau pabrik.',
     },
-  },
-  updatedAt: new Date().toISOString(),
-  createdAt: new Date().toISOString(),
-  status: 'draft',
+    rows: initialRows,
+    paramsConfig: { ...DEFAULT_IN_SITU_CONFIG },
+    footer: {
+      denahType: 'text',
+      denahDataUrl: '',
+      denahText: 'Lokasi inlet dan outlet IPAL berada di area barat pabrik dekat bak stabilisasi.',
+      kondisiLingkunganCuaca: 'Cuaca Cerah Berawan, Suhu Udara 31°C, Kelembaban 68%, Aliran debit air normal stabil.',
+      diverifikasiOleh: {
+        nama: 'Ahmad Fauzi, S.T.',
+        jabatan: 'Penanggung Jawab Lingkungan / Petugas Sampling',
+        tanggal: new Date().toISOString().split('T')[0],
+        signatureDataUrl: '',
+      },
+    },
+    status: 'draft',
+    updatedAt: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+  };
 };
 
-const AUTOSAVE_STORAGE_KEY = 'ankal_datlap_autosave_v3_clean';
-
 export default function App() {
+  // Active Editing Document
   const [doc, setDoc] = useState<DatlapDocument>(() => {
     try {
-      const saved = localStorage.getItem(AUTOSAVE_STORAGE_KEY);
+      const saved = localStorage.getItem(STORAGE_KEY_CURRENT_FORM);
       if (saved) {
-        const parsed = JSON.parse(saved);
-        return {
-          ...parsed,
-          terbitRevisi: '3/0',
-        };
+        return JSON.parse(saved);
       }
     } catch (e) {
       console.error(e);
     }
-    return INITIAL_DOC;
+    return createDefaultDocument();
   });
 
+  // View Mode: 'editor' | 'printPreview'
   const [viewMode, setViewMode] = useState<'editor' | 'printPreview'>('editor');
+
+  // UI Modals State
   const [highlightWajibOnly, setHighlightWajibOnly] = useState<boolean>(false);
   const [isParamConfigOpen, setIsParamConfigOpen] = useState(false);
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
   const [isDraftsOpen, setIsDraftsOpen] = useState(false);
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'info' | 'warn' } | null>(null);
 
-  // Auto-save changes to localStorage
+  // Auto-save current form state to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem(AUTOSAVE_STORAGE_KEY, JSON.stringify(doc));
+      localStorage.setItem(STORAGE_KEY_CURRENT_FORM, JSON.stringify(doc));
     } catch (e) {
-      console.error(e);
+      console.error('Error saving current form to localStorage:', e);
     }
   }, [doc]);
 
@@ -124,68 +165,30 @@ export default function App() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Direct PDF Export Generator
-  const handleDirectPDFExport = async () => {
-    setIsGeneratingPDF(true);
-    showToast('Sedang membuat file PDF resmi ANKAL...', 'info');
-
-    // Ensure print preview is active so DOM sheet is mounted
-    if (viewMode !== 'printPreview') {
-      setViewMode('printPreview');
-      // Give React a tick to mount the print preview sheet
-      await new Promise(resolve => setTimeout(resolve, 300));
-    }
-
-    try {
-      const success = await exportToPDF(doc, 'official-form-page');
-      if (success) {
-        showToast('File PDF resmi berhasil diunduh ke perangkat!', 'success');
-      } else {
-        showToast('Gagal memproses PDF, membuka dialog cetak browser...', 'warn');
-      }
-    } catch (err) {
-      console.error('PDF export error:', err);
-      showToast('Terjadi kesalahan saat membuat PDF', 'warn');
-    } finally {
-      setIsGeneratingPDF(false);
-    }
-  };
-
-  // Validation calculations
-  const headerMandatoryKeys = ['namaPelanggan', 'alamat', 'narahubung', 'tanggal', 'metode'] as const;
-  const missingHeaderFields = headerMandatoryKeys.filter(k => !doc.header[k]?.trim());
-  const activeRows = doc.rows.filter(r => r.titikSampling.trim() || r.koordinatNS.trim() || r.jam.trim());
-  const invalidRows = activeRows.filter(
-    r => !r.titikSampling.trim() || !r.jam.trim() || !r.koordinatNS.trim() || !r.koordinatE.trim()
-  );
-
-  const totalErrors = missingHeaderFields.length + invalidRows.length;
-  const auditPass = totalErrors === 0 && activeRows.length > 0;
-
-  // Header handlers
+  // Header Handlers
   const handleHeaderChange = (field: keyof typeof doc.header, value: string) => {
     setDoc(prev => ({
       ...prev,
+      updatedAt: new Date().toISOString(),
       header: {
         ...prev.header,
         [field]: value,
       },
-      updatedAt: new Date().toISOString(),
     }));
   };
 
-  // Rows handlers
+  // Row Management
   const handleRowChange = (index: number, field: keyof DatlapRow, value: string) => {
     setDoc(prev => {
-      const nextRows = [...prev.rows];
-      nextRows[index] = {
-        ...nextRows[index],
+      const newRows = [...prev.rows];
+      newRows[index] = {
+        ...newRows[index],
         [field]: value,
       };
       return {
         ...prev,
-        rows: nextRows,
         updatedAt: new Date().toISOString(),
+        rows: newRows,
       };
     });
   };
@@ -193,92 +196,91 @@ export default function App() {
   const handleAddRow = () => {
     setDoc(prev => ({
       ...prev,
-      rows: [...prev.rows, createEmptyRow(prev.rows.length)],
       updatedAt: new Date().toISOString(),
+      rows: [...prev.rows, createEmptyRow(prev.rows.length + 1)],
     }));
-    showToast('Baris titik sampling baru ditambahkan');
   };
 
   const handleAddMultipleRows = (count: number) => {
     setDoc(prev => {
-      const newItems = Array.from({ length: count }, (_, i) => createEmptyRow(prev.rows.length + i));
+      const newRows = [...prev.rows];
+      for (let i = 0; i < count; i++) {
+        newRows.push(createEmptyRow(newRows.length + 1));
+      }
       return {
         ...prev,
-        rows: [...prev.rows, ...newItems],
         updatedAt: new Date().toISOString(),
+        rows: newRows,
       };
     });
-    showToast(`+${count} baris baru ditambahkan`);
+    showToast(`Berhasil menambahkan ${count} baris sampel baru!`, 'success');
   };
 
   const handleRemoveRow = (index: number) => {
-    if (doc.rows.length <= 1) return;
-    setDoc(prev => ({
-      ...prev,
-      rows: prev.rows.filter((_, i) => i !== index),
-      updatedAt: new Date().toISOString(),
-    }));
+    if (doc.rows.length <= 1) {
+      alert('Tabel minimal harus memiliki 1 baris data.');
+      return;
+    }
+    setDoc(prev => {
+      const newRows = prev.rows.filter((_, i) => i !== index);
+      return {
+        ...prev,
+        updatedAt: new Date().toISOString(),
+        rows: newRows,
+      };
+    });
   };
 
   const handleDuplicateRow = (index: number) => {
     setDoc(prev => {
       const target = prev.rows[index];
-      const duplicated: DatlapRow = {
+      const newRow: DatlapRow = {
         ...target,
         id: `row-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-        titikSampling: `${target.titikSampling} (Copy)`,
+        titikSampling: `${target.titikSampling} (Duplikat)`,
       };
-      const nextRows = [...prev.rows];
-      nextRows.splice(index + 1, 0, duplicated);
+      const newRows = [...prev.rows];
+      newRows.splice(index + 1, 0, newRow);
       return {
         ...prev,
-        rows: nextRows,
         updatedAt: new Date().toISOString(),
+        rows: newRows,
       };
     });
-    showToast('Baris berhasil diduplikasi');
   };
 
   const handleClearEmptyRows = () => {
-    setDoc(prev => {
-      const filtered = prev.rows.filter(r => 
-        r.titikSampling.trim() || r.koordinatNS.trim() || r.jam.trim() || r.temperatur.trim() || r.pH.trim()
-      );
-      return {
+    const filled = doc.rows.filter(r => r.titikSampling.trim() || r.koordinatNS.trim() || r.koordinatE.trim() || r.jam.trim());
+    if (filled.length === 0) {
+      setDoc(prev => ({
         ...prev,
-        rows: filtered.length > 0 ? filtered : [createEmptyRow(0)],
-        updatedAt: new Date().toISOString(),
-      };
-    });
-    showToast('Baris kosong telah dibersihkan');
+        rows: [createEmptyRow(1)],
+      }));
+    } else {
+      setDoc(prev => ({
+        ...prev,
+        rows: filled,
+      }));
+    }
+    showToast('Baris kosong berhasil dibersihkan.', 'info');
   };
 
-  // Footer handlers
-  const handleFooterDenah = (field: 'denahType' | 'denahDataUrl' | 'denahText', value: any) => {
+  // Footer Handlers
+  const handleFooterChange = (field: keyof typeof doc.footer, value: any) => {
     setDoc(prev => ({
       ...prev,
+      updatedAt: new Date().toISOString(),
       footer: {
         ...prev.footer,
         [field]: value,
       },
-      updatedAt: new Date().toISOString(),
     }));
   };
 
-  const handleFooterCuaca = (value: string) => {
+  const handleVerifierChange = (field: keyof typeof doc.footer.diverifikasiOleh, value: string) => {
     setDoc(prev => ({
       ...prev,
-      footer: {
-        ...prev.footer,
-        kondisiLingkunganCuaca: value,
-      },
       updatedAt: new Date().toISOString(),
-    }));
-  };
-
-  const handleFooterVerifikasi = (field: keyof typeof doc.footer.diverifikasiOleh, value: string) => {
-    setDoc(prev => ({
-      ...prev,
       footer: {
         ...prev.footer,
         diverifikasiOleh: {
@@ -286,70 +288,61 @@ export default function App() {
           [field]: value,
         },
       },
-      updatedAt: new Date().toISOString(),
     }));
   };
 
-  // Template Loader
-  const handleApplyTemplate = (templateData: Partial<DatlapDocument>) => {
-    setDoc(prev => ({
-      ...prev,
-      ...templateData,
-      header: {
-        ...prev.header,
-        ...(templateData.header || {}),
-      },
-      rows: (templateData.rows as DatlapRow[]) || prev.rows,
-      footer: {
-        ...prev.footer,
-        ...(templateData.footer || {}),
-      },
-      updatedAt: new Date().toISOString(),
-    }));
-    showToast('Template berhasil dimuat');
-  };
-
-  // Reset Form Handler
   const handleResetForm = () => {
-    if (confirm('Kosongkan semua data formulir untuk memulai pengisian baru?')) {
-      setDoc({
-        ...INITIAL_DOC,
-        id: `doc-${Date.now()}`,
-        header: {
-          ...INITIAL_HEADER_DATA,
-          tanggal: new Date().toISOString().split('T')[0],
-        },
-        rows: [createEmptyRow(0)],
-        footer: {
-          denahType: 'sketch',
-          denahDataUrl: '',
-          denahText: '',
-          kondisiLingkunganCuaca: '',
-          diverifikasiOleh: {
-            nama: '',
-            jabatan: '',
-            tanggal: new Date().toISOString().split('T')[0],
-            signatureDataUrl: '',
-          },
-        },
-      });
-      showToast('Formulir berhasil direset', 'info');
+    if (confirm('Yakin ingin mereset formulir ini ke format awal? Data yang belum disimpan ke draft akan hilang.')) {
+      setDoc(createDefaultDocument());
+      showToast('Formulir berhasil direset.', 'info');
     }
   };
 
+  const handleLoadDoc = (loaded: DatlapDocument) => {
+    setDoc(loaded);
+    showToast('Dokumen berhasil dimuat!', 'success');
+  };
+
+  const handleSaveCurrentDraft = () => {
+    setIsDraftsOpen(true);
+  };
+
+  // Audit Data Completeness
+  const headerMissingCount = 
+    (!doc.header.namaPelanggan.trim() ? 1 : 0) +
+    (!doc.header.alamat.trim() ? 1 : 0) +
+    (!doc.header.narahubung.trim() ? 1 : 0) +
+    (!doc.header.tanggal.trim() ? 1 : 0) +
+    (!doc.header.metode.trim() ? 1 : 0);
+
+  const rowsMissingCount = doc.rows.filter(
+    r => !r.titikSampling.trim() || !r.jam.trim() || !r.koordinatNS.trim() || !r.koordinatE.trim()
+  ).length;
+
+  const verifierMissing = !doc.footer.diverifikasiOleh.nama.trim() || !doc.footer.diverifikasiOleh.jabatan.trim();
+  const totalAuditErrors = headerMissingCount + rowsMissingCount + (verifierMissing ? 1 : 0);
+
+  const totalForms = Math.max(1, Math.ceil(doc.rows.length / 12));
+
   return (
-    <div className="h-full flex flex-col bg-slate-900 text-slate-800 font-sans overflow-hidden">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans antialiased text-slate-900 selection:bg-emerald-500 selection:text-white">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-4 right-4 z-50 bg-slate-800 text-white border border-slate-700 shadow-xl rounded-lg px-4 py-2.5 flex items-center gap-2 text-xs font-semibold animate-in fade-in slide-in-from-top-4 duration-150">
-          {toastMessage.type === 'success' && <CheckCircle className="w-4 h-4 text-emerald-400" />}
-          {toastMessage.type === 'warn' && <AlertTriangle className="w-4 h-4 text-amber-400" />}
-          {toastMessage.type === 'info' && <Sparkles className="w-4 h-4 text-sky-400" />}
-          <span>{toastMessage.text}</span>
+        <div className="fixed bottom-5 right-5 z-50 animate-in fade-in slide-in-from-bottom-3 duration-300">
+          <div className={`px-4 py-2.5 rounded-lg shadow-xl text-xs font-semibold flex items-center gap-2 border ${
+            toastMessage.type === 'success' 
+              ? 'bg-slate-900 text-emerald-400 border-emerald-500/50'
+              : toastMessage.type === 'warn'
+              ? 'bg-slate-900 text-amber-400 border-amber-500/50'
+              : 'bg-slate-900 text-sky-400 border-sky-500/50'
+          }`}>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>{toastMessage.text}</span>
+          </div>
         </div>
       )}
 
-      {/* App Header & Action Toolbar */}
+      {/* Official Header & Navigation Bar */}
       <HeaderMetadata
         doc={doc}
         viewMode={viewMode}
@@ -357,217 +350,249 @@ export default function App() {
         onOpenParamConfig={() => setIsParamConfigOpen(true)}
         onOpenTemplates={() => setIsTemplatesOpen(true)}
         onOpenDrafts={() => setIsDraftsOpen(true)}
-        onSaveDraft={() => {
-          setIsDraftsOpen(true);
-        }}
-        onExportCSV={() => {
-          exportToCSV(doc);
-          showToast('Data CSV berhasil diunduh');
-        }}
-        onExportExcel={() => {
-          exportToExcel(doc);
-          showToast('Formulir resmi Excel (.xlsx) berhasil diunduh');
-        }}
-        onExportPDF={handleDirectPDFExport}
-        onPrint={() => {
-          if (viewMode !== 'printPreview') {
-            setViewMode('printPreview');
-            setTimeout(() => triggerPrintDialog(), 300);
-          } else {
-            triggerPrintDialog();
-          }
-        }}
-        auditPass={auditPass}
-        totalErrors={totalErrors}
+        onSaveDraft={handleSaveCurrentDraft}
+        auditPass={totalAuditErrors === 0}
+        totalErrors={totalAuditErrors}
       />
 
-      {/* Main Workspace: Either High-Density Interactive Editor OR Official Printable View */}
+      {/* Main Content Area */}
       {viewMode === 'printPreview' ? (
-        <OfficialPrintView doc={doc} onBackToEditor={() => setViewMode('editor')} />
+        <OfficialPrintView
+          doc={doc}
+          onBackToEditor={() => setViewMode('editor')}
+        />
       ) : (
-        <main className="flex-1 bg-[#f8fafc] overflow-y-auto p-4 space-y-4">
-          <div className="max-w-7xl mx-auto space-y-4">
-            {/* Quick Template Selector Banner */}
-            <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 border border-emerald-200 rounded-lg p-3 shadow-sm flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <div className="p-1.5 bg-emerald-500 text-white rounded-md shadow-xs">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-800">
-                    Pilih Contoh Isian Sampling (Template Preset)
-                  </p>
-                  <p className="text-[11px] text-slate-500">
-                    Klik salah satu template di bawah untuk mengisi contoh data riil otomatis, atau isi langsung formulir kosong di bawah.
-                  </p>
-                </div>
+        <main id="main-content" className="flex-1 w-full max-w-7xl mx-auto p-3 sm:p-5 space-y-4 bg-slate-50 no-print">
+          {/* Form Top Control Card */}
+          <div className="bg-white rounded-xl border border-slate-200 p-3.5 sm:p-4 shadow-xs flex flex-wrap justify-between items-center gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-50 border border-emerald-300 flex items-center justify-center text-emerald-700 font-bold shrink-0">
+                <FileText className="w-5 h-5" />
               </div>
-
-              <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  type="button"
-                  onClick={() => setIsTemplatesOpen(true)}
-                  className="px-3 py-1.5 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Lihat Semua Template (3 Jenis)</span>
-                </button>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-sm sm:text-base font-extrabold text-slate-800 tracking-tight">
+                    Pengambilan Contoh Uji Air Oleh Pelanggan
+                  </h2>
+                  <span className="text-[11px] font-mono bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-300 font-bold">
+                    {doc.docCode}
+                  </span>
+                  <span className="text-[11px] font-mono bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-300 font-bold flex items-center gap-1">
+                    <Layers className="w-3 h-3 text-emerald-600" />
+                    {totalForms} Formulir ({doc.rows.length} Sampel • 12/Form)
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Formulir digital resmi Laboratorium Lingkungan ANKAL. Sesuai SNI dan standar regulasi lingkungan.
+                </p>
               </div>
             </div>
 
-            {/* 1. Header Metadata & Customer Identification Card */}
-            <FormHeaderFields
-              header={doc.header}
-              onChange={handleHeaderChange}
-              highlightWajibOnly={highlightWajibOnly}
-            />
+            {/* Quick Actions & Audit indicator */}
+            <div className="flex items-center gap-2 flex-wrap text-xs">
+              <button
+                type="button"
+                onClick={() => setHighlightWajibOnly(!highlightWajibOnly)}
+                className={`px-3 py-1.5 rounded-lg border font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  highlightWajibOnly
+                    ? 'bg-amber-100 border-amber-300 text-amber-900'
+                    : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+                }`}
+                title="Tandai kolom-kolom wajib yang masih kosong"
+              >
+                {totalAuditErrors === 0 ? (
+                  <>
+                    <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Data Lengkap</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                    <span>{totalAuditErrors} Kolom Kosong</span>
+                  </>
+                )}
+              </button>
 
-            {/* 2. High-Density Datlap Spreadsheet Grid */}
-            <DatlapGrid
-              rows={doc.rows}
-              onChangeRow={handleRowChange}
-              onAddRow={handleAddRow}
-              onAddMultipleRows={handleAddMultipleRows}
-              onRemoveRow={handleRemoveRow}
-              onDuplicateRow={handleDuplicateRow}
-              onClearEmptyRows={handleClearEmptyRows}
-              paramsConfig={doc.paramsConfig}
-              onOpenParamConfig={() => setIsParamConfigOpen(true)}
-              highlightWajibOnly={highlightWajibOnly}
-            />
+              <button
+                type="button"
+                onClick={() => setViewMode('printPreview')}
+                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                title="Selesai pengisian dan buka format cetak resmi"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Selesai</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
 
-            {/* 3. Bottom Sections Grid: Denah, Cuaca, & Verifikasi */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-              {/* Denah Lokasi Sketsa / Upload / Teks (Col 5) */}
-              <div className="md:col-span-5">
-                <SketchCanvas
-                  denahType={doc.footer.denahType}
-                  denahDataUrl={doc.footer.denahDataUrl}
-                  denahText={doc.footer.denahText}
-                  onChangeType={(t) => handleFooterDenah('denahType', t)}
-                  onChangeDataUrl={(url) => handleFooterDenah('denahDataUrl', url)}
-                  onChangeText={(text) => handleFooterDenah('denahText', text)}
-                />
+              <button
+                type="button"
+                onClick={handleResetForm}
+                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 cursor-pointer"
+                title="Reset formulir"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Section 1: Form Header Metadata Fields */}
+          <FormHeaderFields
+            header={doc.header}
+            onChange={handleHeaderChange}
+            highlightWajibOnly={highlightWajibOnly}
+          />
+
+          {/* Section 2: Sampling Points & In-situ Measurements Grid */}
+          <DatlapGrid
+            rows={doc.rows}
+            onChangeRow={handleRowChange}
+            onAddRow={handleAddRow}
+            onAddMultipleRows={handleAddMultipleRows}
+            onRemoveRow={handleRemoveRow}
+            onDuplicateRow={handleDuplicateRow}
+            onClearEmptyRows={handleClearEmptyRows}
+            paramsConfig={doc.paramsConfig}
+            onOpenParamConfig={() => setIsParamConfigOpen(true)}
+            highlightWajibOnly={highlightWajibOnly}
+          />
+
+          {/* Section 3: Bottom 3 Cards (Denah Lokasi, Kondisi Lingkungan/Cuaca, Diverifikasi Oleh) */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
+            {/* Column 1: Sketch / Map Card */}
+            <div className="h-full">
+              <SketchCanvas
+                denahType={doc.footer.denahType}
+                denahDataUrl={doc.footer.denahDataUrl}
+                denahText={doc.footer.denahText}
+                onChangeType={(type) => handleFooterChange('denahType', type)}
+                onChangeDataUrl={(url) => handleFooterChange('denahDataUrl', url)}
+                onChangeText={(txt) => handleFooterChange('denahText', txt)}
+              />
+            </div>
+
+            {/* Column 2: Kondisi Lingkungan / Cuaca */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden h-full flex flex-col justify-between text-slate-800">
+              <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-200 flex items-center gap-1.5">
+                <CloudSun className="w-3.5 h-3.5 text-amber-600" />
+                <label className="text-[11px] font-bold text-slate-800 uppercase">
+                  KONDISI LINGKUNGAN / CUACA
+                </label>
               </div>
-
-              {/* Kondisi Lingkungan / Cuaca (Col 4) */}
-              <div className="md:col-span-4">
-                <div className="bg-slate-50 rounded border border-slate-300 p-3 h-full flex flex-col">
-                  <label 
-                    htmlFor="kondisiLingkunganCuaca"
-                    className="text-[11px] font-bold text-slate-700 uppercase flex items-center justify-between pb-2 mb-2 border-b border-slate-200"
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <CloudSun className="w-3.5 h-3.5 text-amber-500" />
-                      <span>Kondisi Lingkungan / Cuaca:</span>
-                    </span>
-                  </label>
-                  <textarea
-                    id="kondisiLingkunganCuaca"
-                    value={doc.footer.kondisiLingkunganCuaca}
-                    onChange={(e) => handleFooterCuaca(e.target.value)}
-                    placeholder="Contoh: Cuaca cerah berawan, suhu udara 31°C, arah angin ke barat, debit air normal mengalir lancar, tidak ada anomali bau/warna..."
-                    className="w-full flex-1 min-h-[140px] text-xs p-2.5 bg-white rounded border border-slate-300 focus:border-emerald-500 resize-none"
-                  />
-                </div>
-              </div>
-
-              {/* Diverifikasi Oleh & Digital Signature Pad (Col 3) */}
-              <div className="md:col-span-3">
-                <SignaturePad
-                  data={doc.footer.diverifikasiOleh}
-                  onChange={handleFooterVerifikasi}
+              <div className="p-3.5 flex-1 flex flex-col justify-between">
+                <textarea
+                  rows={6}
+                  value={doc.footer.kondisiLingkunganCuaca}
+                  onChange={(e) => handleFooterChange('kondisiLingkunganCuaca', e.target.value)}
+                  placeholder="Contoh: Cuaca Cerah Berawan, Suhu Udara 30°C, Kelembaban 70%, Debit air stabil normal..."
+                  className="w-full flex-1 min-h-[140px] p-2.5 text-xs bg-slate-50/40 rounded border border-slate-300 focus:border-emerald-500 focus:bg-white resize-none font-medium text-slate-800 leading-relaxed"
                 />
+                <p className="text-[10px] text-slate-500 mt-2 italic">
+                  * Deskripsikan cuaca dan situasi sekitar lokasi pengambilan sampel.
+                </p>
               </div>
             </div>
 
-            {/* Bottom Actions Banner */}
-            <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm flex flex-wrap justify-between items-center gap-3">
-              <div className="flex items-center gap-3 text-xs">
-                <button
-                  type="button"
-                  onClick={handleResetForm}
-                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded border border-slate-300 font-medium transition-colors flex items-center gap-1.5"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Reset Form Kosong</span>
-                </button>
-                <span className="text-slate-400 text-xs hidden sm:inline">|</span>
-                <span className="text-[11px] text-slate-500 hidden sm:inline">
-                  Terakhir diperbarui: {new Date(doc.updatedAt).toLocaleTimeString('id-ID')}
-                </span>
-              </div>
+            {/* Column 3: Diverifikasi Oleh */}
+            <div className="h-full">
+              <SignaturePad
+                data={doc.footer.diverifikasiOleh}
+                onChange={handleVerifierChange}
+              />
+            </div>
+          </div>
 
-              <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setViewMode('printPreview');
-                  }}
-                  className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5"
-                >
-                  <Eye className="w-3.5 h-3.5 text-slate-300" />
-                  <span>Lihat Pratinjau Format</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setViewMode('printPreview');
-                    setTimeout(() => triggerPrintDialog(), 300);
-                  }}
-                  className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded text-xs font-semibold transition-colors shadow-sm flex items-center gap-1.5 border border-slate-700"
-                >
-                  <Printer className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Cetak Printer</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleDirectPDFExport}
-                  disabled={isGeneratingPDF}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 text-white rounded text-xs font-bold transition-colors shadow-md flex items-center gap-2 cursor-pointer"
-                >
-                  <FileDown className="w-4 h-4" />
-                  <span>Unduh File PDF Resmi (.pdf)</span>
-                </button>
-              </div>
+          {/* Bottom Fast Toolbar & Action Bar */}
+          <div className="bg-white rounded-xl border border-slate-200 p-3.5 shadow-xs flex flex-wrap justify-between items-center gap-3">
+            <div className="flex items-center gap-3 text-xs text-slate-600">
+              <button
+                type="button"
+                onClick={handleResetForm}
+                className="px-3 py-1.5 text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-300 rounded-lg font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Reset formulir kosong"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Reset Form Kosong</span>
+              </button>
+              <span className="text-slate-300">|</span>
+              <span className="text-slate-500">
+                Terakhir diperbarui: {new Date(doc.updatedAt || Date.now()).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/:/g, '.')}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2.5 flex-wrap text-xs">
+              <button
+                type="button"
+                onClick={() => setViewMode('printPreview')}
+                className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold flex items-center gap-2 shadow-xs transition-colors text-xs sm:text-sm cursor-pointer"
+                title="Selesai pengisian data dan buka format cetak resmi"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Selesai</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </main>
       )}
 
-      {/* Footer System Info */}
-      <footer className="bg-slate-900 border-t border-slate-800 px-4 py-2 flex justify-between items-center text-[10px] text-slate-400 shrink-0 no-print">
-        <p>© 2026 Laboratorium Pengujian ANKAL | Dokumen Form: AKL-FO-7.3-36</p>
-        <p className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span>Status Sistem: Aktif • Laboratorium Pengujian Lingkungan ANKAL</span>
-        </p>
+      {/* Off-screen / Print Container for direct PDF generation and printing from Homepage */}
+      <div
+        id="print-offscreen-container"
+        className={`offscreen-printable-sheet ${viewMode === 'printPreview' ? 'hidden' : ''}`}
+        aria-hidden="true"
+      >
+        <OfficialFormPages doc={doc} />
+      </div>
+
+      {/* Footer copyright */}
+      <footer className="bg-[#0f172a] text-slate-400 text-xs py-2.5 px-4 flex flex-wrap justify-between items-center gap-2 border-t border-slate-800 no-print mt-auto">
+        <div className="flex items-center gap-2">
+          <span>© 2026 Laboratorium Pengujian ANKAL</span>
+          <span className="text-slate-600">•</span>
+          <span className="font-mono text-slate-300">Dokumen Form: {doc.docCode}</span>
+        </div>
+        <div className="flex items-center gap-2 text-slate-400">
+          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>Status Sistem: Aktif</span>
+          <span className="text-slate-600">•</span>
+          <span>Laboratorium Pengujian Lingkungan ANKAL</span>
+        </div>
       </footer>
 
-      {/* Modals */}
+      {/* Parameter In-Situ Configuration Modal */}
       <ParamConfigModal
         isOpen={isParamConfigOpen}
         onClose={() => setIsParamConfigOpen(false)}
         config={doc.paramsConfig}
-        onChangeConfig={(newConfig) => setDoc(prev => ({ ...prev, paramsConfig: newConfig }))}
+        onChangeConfig={(newCfg) => setDoc(prev => ({ ...prev, paramsConfig: newCfg }))}
       />
 
+      {/* Preset Templates Modal */}
       <TemplatesModal
         isOpen={isTemplatesOpen}
         onClose={() => setIsTemplatesOpen(false)}
-        onApplyTemplate={handleApplyTemplate}
+        onApplyTemplate={(tmpl) => {
+          setDoc(prev => ({
+            ...prev,
+            ...tmpl,
+            header: { ...prev.header, ...(tmpl.header || {}) },
+            footer: { ...prev.footer, ...(tmpl.footer || {}) },
+            rows: tmpl.rows ? tmpl.rows as DatlapRow[] : prev.rows,
+            paramsConfig: tmpl.paramsConfig ? { ...prev.paramsConfig, ...tmpl.paramsConfig } : prev.paramsConfig,
+            updatedAt: new Date().toISOString(),
+          }));
+          showToast('Template sampling berhasil diterapkan!', 'success');
+        }}
       />
 
+      {/* Drafts Manager Modal */}
       <DraftsModal
         isOpen={isDraftsOpen}
         onClose={() => setIsDraftsOpen(false)}
         currentDoc={doc}
-        onLoadDoc={(loaded) => {
-          setDoc(loaded);
-          showToast('Draft formulir dimuat');
-        }}
-        onSaveCurrentAsNew={(title) => {
-          showToast('Draft berhasil disimpan');
+        onLoadDoc={handleLoadDoc}
+        onSaveCurrentAsNew={(name) => {
+          showToast(`Draft "${name}" berhasil disimpan ke arsip!`, 'success');
         }}
       />
     </div>
