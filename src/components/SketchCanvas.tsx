@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Pen, Eraser, RotateCcw, Upload, Image as ImageIcon, FileText, Check, MapPin } from 'lucide-react';
+import { Pen, RotateCcw, Upload, Image as ImageIcon, FileText, MapPin } from 'lucide-react';
+import { Language, getTranslation } from '../utils/i18n';
 
 interface SketchCanvasProps {
   denahType: 'sketch' | 'upload' | 'text';
@@ -8,6 +9,7 @@ interface SketchCanvasProps {
   onChangeType: (type: 'sketch' | 'upload' | 'text') => void;
   onChangeDataUrl: (url: string) => void;
   onChangeText: (text: string) => void;
+  lang: Language;
 }
 
 export const SketchCanvas: React.FC<SketchCanvasProps> = ({
@@ -17,12 +19,14 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
   onChangeType,
   onChangeDataUrl,
   onChangeText,
+  lang,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [penColor, setPenColor] = useState('#1e293b');
   const [penWidth, setPenWidth] = useState(2);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const t = getTranslation(lang);
 
   // Initialize canvas with existing dataUrl if present
   useEffect(() => {
@@ -154,7 +158,7 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
       <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-200 flex flex-wrap justify-between items-center gap-2">
         <label className="text-[11px] font-bold text-slate-800 uppercase flex items-center gap-1.5">
           <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Denah Lokasi & Titik Sampling</span>
+          <span>{t.sketchTitle}</span>
         </label>
         <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200 text-xs shadow-2xs">
           <button
@@ -165,7 +169,7 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
             }`}
           >
             <Pen className="w-3 h-3" />
-            <span>Gambar Sketsa</span>
+            <span>{t.sketchDraw}</span>
           </button>
           <button
             type="button"
@@ -175,7 +179,7 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
             }`}
           >
             <Upload className="w-3 h-3" />
-            <span>Upload Foto</span>
+            <span>{t.sketchUpload}</span>
           </button>
           <button
             type="button"
@@ -185,7 +189,7 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
             }`}
           >
             <FileText className="w-3 h-3" />
-            <span>Teks Deskripsi</span>
+            <span>{t.sketchText}</span>
           </button>
         </div>
       </div>
@@ -197,7 +201,7 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
             {/* Toolbar for Sketch */}
             <div className="flex items-center justify-between gap-2 mb-1.5 text-xs">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-slate-500 font-semibold">Warna:</span>
+                <span className="text-[10px] text-slate-500 font-semibold">{t.sketchColor}:</span>
                 {['#1e293b', '#2563eb', '#dc2626', '#16a34a'].map((c) => (
                   <button
                     key={c}
@@ -215,7 +219,7 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
                   onClick={() => setPenWidth(penWidth === 2 ? 4 : 2)}
                   className="px-1.5 py-0.5 text-[10px] bg-white border border-slate-200 rounded text-slate-600 hover:bg-slate-50"
                 >
-                  Tebal: {penWidth}px
+                  {t.sketchThickness}: {penWidth}px
                 </button>
               </div>
               <button
@@ -224,7 +228,7 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
                 className="px-2 py-0.5 text-[10px] bg-white border border-slate-200 rounded text-red-600 hover:bg-red-50 flex items-center gap-1"
               >
                 <RotateCcw className="w-2.5 h-2.5" />
-                <span>Bersihkan</span>
+                <span>{t.sketchClear}</span>
               </button>
             </div>
 
@@ -244,7 +248,7 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
                 className="w-full h-full cursor-crosshair"
               />
               <span className="absolute bottom-1 right-2 text-[9px] text-slate-400 select-none pointer-events-none">
-                Gambarkan sketsa titik sampling di sini
+                {t.sketchPlaceholder}
               </span>
             </div>
           </div>
@@ -264,20 +268,20 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
                   onClick={() => onChangeDataUrl('')}
                   className="mt-2 text-[10px] text-red-600 hover:underline"
                 >
-                  Hapus Foto Denah
+                  {lang === 'zh' ? '删除照片' : lang === 'en' ? 'Delete Photo' : 'Hapus Foto Denah'}
                 </button>
               </div>
             ) : (
               <div className="text-center space-y-2">
                 <ImageIcon className="w-8 h-8 text-slate-400 mx-auto" />
-                <p className="text-xs text-slate-600">Unggah foto denah lokasi / layout pabrik / peta sampling</p>
+                <p className="text-xs text-slate-600">{t.sketchUploadPrompt}</p>
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-semibold shadow-sm inline-flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-semibold shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5" />
-                  <span>Pilih Gambar Denah</span>
+                  <span>{t.sketchSelectImage}</span>
                 </button>
                 <input
                   ref={fileInputRef}
@@ -295,7 +299,7 @@ export const SketchCanvas: React.FC<SketchCanvasProps> = ({
           <textarea
             value={denahText}
             onChange={(e) => onChangeText(e.target.value)}
-            placeholder="Deskripsikan letak titik pengambilan contoh uji secara rinci (Contoh: Titik 1 berada di bak equalisasi 10m dari gerbang timur; Titik 2 di saluran drainase outlet WWTP setelah clarifier)..."
+            placeholder={t.sketchTextPlaceholder}
             className="w-full flex-1 p-2 text-xs bg-white rounded border border-slate-300 focus:border-emerald-500 resize-none"
           />
         )}

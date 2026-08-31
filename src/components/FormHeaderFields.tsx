@@ -1,11 +1,13 @@
 import React from 'react';
-import { Calendar, User, MapPin, Phone, Hash, BookOpen, AlertCircle, FileEdit } from 'lucide-react';
+import { Calendar, User, MapPin, Phone, BookOpen } from 'lucide-react';
 import { HeaderData } from '../types/datlap';
+import { Language, getTranslation } from '../utils/i18n';
 
 interface FormHeaderFieldsProps {
   header: HeaderData;
   onChange: (field: keyof HeaderData, value: string) => void;
   highlightWajibOnly: boolean;
+  lang: Language;
 }
 
 const COMMON_METHODS = [
@@ -21,7 +23,9 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
   header,
   onChange,
   highlightWajibOnly,
+  lang,
 }) => {
+  const t = getTranslation(lang);
   const isMissing = (val: string) => !val.trim();
 
   return (
@@ -31,11 +35,11 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800">
-            Identitas Pelanggan & Informasi Pengambilan Uji
+            {t.headerSectionTitle}
           </h2>
         </div>
         <span className="text-[11px] text-slate-600 font-medium bg-white px-2.5 py-0.5 rounded border border-slate-200 shadow-2xs">
-          Bagian Atas Formulir
+          {t.headerSectionBadge}
         </span>
       </div>
 
@@ -49,10 +53,10 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <label 
                 htmlFor="namaPelanggan"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r"
+                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r truncate"
               >
                 <User className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>NAMA PELANGGAN</span>
+                <span className="truncate">{t.customerName}</span>
                 <span className="text-emerald-700 font-extrabold">*</span>
               </label>
               <div className="sm:col-span-8 relative">
@@ -61,7 +65,7 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
                   type="text"
                   value={header.namaPelanggan}
                   onChange={(e) => onChange('namaPelanggan', e.target.value)}
-                  placeholder="Contoh: PT. Sumber Tirta Lestari / Bapak Hendra"
+                  placeholder={t.customerNamePlaceholder}
                   className={`w-full px-2.5 py-1.5 text-xs rounded border transition-colors font-medium ${
                     isMissing(header.namaPelanggan)
                       ? 'border-amber-400 bg-amber-50/30 focus:border-emerald-500 focus:bg-white'
@@ -70,7 +74,7 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
                 />
                 {isMissing(header.namaPelanggan) && (
                   <span className="text-[10px] text-amber-700 font-medium absolute right-2 top-2">
-                    Wajib diisi
+                    {t.requiredField}
                   </span>
                 )}
               </div>
@@ -84,10 +88,10 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <label 
                 htmlFor="alamat"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r"
+                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r truncate"
               >
                 <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>ALAMAT</span>
+                <span className="truncate">{t.address}</span>
                 <span className="text-emerald-700 font-extrabold">*</span>
               </label>
               <div className="sm:col-span-8 relative">
@@ -96,7 +100,7 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
                   type="text"
                   value={header.alamat}
                   onChange={(e) => onChange('alamat', e.target.value)}
-                  placeholder="Contoh: Jl. Industri Raya No. 45, Kawasan Industri Jababeka, Cikarang"
+                  placeholder={t.addressPlaceholder}
                   className={`w-full px-2.5 py-1.5 text-xs rounded border transition-colors ${
                     isMissing(header.alamat)
                       ? 'border-amber-400 bg-amber-50/30 focus:border-emerald-500 focus:bg-white'
@@ -105,7 +109,7 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
                 />
                 {isMissing(header.alamat) && (
                   <span className="text-[10px] text-amber-700 font-medium absolute right-2 top-2">
-                    Wajib diisi
+                    {t.requiredField}
                   </span>
                 )}
               </div>
@@ -119,10 +123,10 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <label 
                 htmlFor="narahubung"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r"
+                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r truncate"
               >
                 <Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>NARAHUBUNG</span>
+                <span className="truncate">{t.contact}</span>
                 <span className="text-emerald-700 font-extrabold">*</span>
               </label>
               <div className="sm:col-span-8 relative">
@@ -131,7 +135,7 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
                   type="text"
                   value={header.narahubung}
                   onChange={(e) => onChange('narahubung', e.target.value)}
-                  placeholder="Contoh: Ibu Rina - HSE Officer (0812-3456-7890)"
+                  placeholder={t.contactPlaceholder}
                   className={`w-full px-2.5 py-1.5 text-xs rounded border transition-colors ${
                     isMissing(header.narahubung)
                       ? 'border-amber-400 bg-amber-50/30 focus:border-emerald-500 focus:bg-white'
@@ -140,7 +144,7 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
                 />
                 {isMissing(header.narahubung) && (
                   <span className="text-[10px] text-amber-700 font-medium absolute right-2 top-2">
-                    Wajib diisi
+                    {t.requiredField}
                   </span>
                 )}
               </div>
@@ -154,10 +158,10 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <label 
                 htmlFor="tanggal"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r"
+                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r truncate"
               >
                 <Calendar className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>TANGGAL SAMPLING</span>
+                <span className="truncate">{t.date}</span>
                 <span className="text-emerald-700 font-extrabold">*</span>
               </label>
               <div className="sm:col-span-8 flex items-center gap-2">
@@ -171,10 +175,10 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
                 <button
                   type="button"
                   onClick={() => onChange('tanggal', new Date().toISOString().split('T')[0])}
-                  className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-semibold shrink-0 border border-slate-300"
+                  className="px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-semibold shrink-0 border border-slate-300 cursor-pointer"
                   title="Gunakan tanggal hari ini"
                 >
-                  Hari Ini
+                  {lang === 'zh' ? '今天' : lang === 'en' ? 'Today' : 'Hari Ini'}
                 </button>
               </div>
             </div>
@@ -187,10 +191,10 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
               <label 
                 htmlFor="metode"
-                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r"
+                className="sm:col-span-4 text-[11px] font-bold text-slate-700 uppercase flex items-center gap-1.5 border-l-2 border-emerald-600 pl-2.5 bg-slate-50 py-1.5 rounded-r truncate"
               >
                 <BookOpen className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>METODE</span>
+                <span className="truncate">{t.method}</span>
                 <span className="text-emerald-700 font-extrabold">*</span>
               </label>
               <div className="sm:col-span-8 space-y-1">
@@ -199,7 +203,7 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
                   type="text"
                   value={header.metode}
                   onChange={(e) => onChange('metode', e.target.value)}
-                  placeholder="Pilih metode atau ketik manual..."
+                  placeholder={t.methodPlaceholder}
                   className={`w-full px-2.5 py-1.5 text-xs rounded border transition-colors ${
                     isMissing(header.metode)
                       ? 'border-amber-400 bg-amber-50/30 focus:border-emerald-500 focus:bg-white'
@@ -213,7 +217,7 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
                       key={idx}
                       type="button"
                       onClick={() => onChange('metode', m)}
-                      className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+                      className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors cursor-pointer ${
                         header.metode === m
                           ? 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold'
                           : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200'
@@ -236,19 +240,19 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
                 htmlFor="catatanHeader"
                 className="text-[11px] font-bold text-slate-700 uppercase flex items-center justify-between pb-1.5 mb-2 border-b border-slate-200"
               >
-                <span>Catatan Tambahan:</span>
+                <span>{t.notes}:</span>
                 <span className="text-[10px] font-normal text-slate-500">(Opsional)</span>
               </label>
               <textarea
                 id="catatanHeader"
                 value={header.catatan}
                 onChange={(e) => onChange('catatan', e.target.value)}
-                placeholder="Catatan tambahan dari pelanggan / petunjuk pengiriman sampel / permintaan pengawetan khusus..."
+                placeholder={t.notesPlaceholder}
                 className="w-full min-h-[140px] text-xs p-2.5 bg-white rounded border border-slate-300 focus:border-emerald-500 resize-none font-medium text-slate-800"
               />
             </div>
             <p className="text-[10px] text-slate-500 mt-2 leading-relaxed italic">
-              * Formulir ini merupakan dokumen resmi pendukung Laporan Hasil Uji (LHU) laboratorium ANKAL.
+              * {lang === 'zh' ? '本表单为 ANKAL 环境实验室检验报告（LHU）官方支持凭证。' : lang === 'en' ? 'This form is an official supporting document for the ANKAL laboratory Test Result Report (LHU).' : 'Formulir ini merupakan dokumen resmi pendukung Laporan Hasil Uji (LHU) laboratorium ANKAL.'}
             </p>
           </div>
         </div>
@@ -256,3 +260,4 @@ export const FormHeaderFields: React.FC<FormHeaderFieldsProps> = ({
     </div>
   );
 };
+

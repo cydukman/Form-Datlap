@@ -3,10 +3,12 @@ import { DatlapDocument } from '../types/datlap';
 import { Printer, ArrowLeft, Download, FileDown, Info, FileSpreadsheet, Layers } from 'lucide-react';
 import { exportToCSV, exportToExcel, exportToPDF, triggerPrintDialog } from '../utils/exportUtils';
 import { formatPhValue } from '../utils/phUtils';
+import { Language, getTranslation } from '../utils/i18n';
 
 interface OfficialPrintViewProps {
   doc: DatlapDocument;
   onBackToEditor: () => void;
+  lang?: Language;
 }
 
 const SAMPLES_PER_FORM = 12;
@@ -351,9 +353,11 @@ export const OfficialFormPages: React.FC<{ doc: DatlapDocument }> = ({ doc }) =>
 export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
   doc,
   onBackToEditor,
+  lang = 'id',
 }) => {
   // 1 Form = 12 Samples limitation
   const totalPages = Math.max(1, Math.ceil(doc.rows.length / SAMPLES_PER_FORM));
+  const t = getTranslation(lang);
 
   const handleDownloadPDF = async () => {
     try {
@@ -373,15 +377,15 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
             className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Kembali ke Editor</span>
+            <span>{t.backToEditorBtn}</span>
           </button>
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-slate-300 font-medium">
-              Pratinjau Format Resmi ANKAL (AKL-FO-7.3-36)
+              {t.previewTitle} ({doc.docCode || 'AKL-FO-7.3-36'})
             </span>
             <span className="text-[11px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-700/60 px-2 py-0.5 rounded font-bold flex items-center gap-1">
               <Layers className="w-3 h-3" />
-              {totalPages} Formulir ({doc.rows.length} Sampel • 12/Form)
+              {totalPages} {lang === 'zh' ? '张表单' : lang === 'en' ? 'Forms' : 'Formulir'} ({doc.rows.length} {t.samplesCountBadge} • 12/Form)
             </span>
           </div>
         </div>
@@ -389,39 +393,39 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => exportToExcel(doc)}
-            className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
-            title="Download formulir resmi lengkap dalam format Microsoft Excel (.xlsx)"
+            className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
+            title={t.exportExcelTooltip}
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-200" />
-            <span>Export Excel</span>
+            <span>{t.exportExcelBtn}</span>
           </button>
 
           <button
             onClick={() => exportToCSV(doc)}
             className="px-3.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Download data tabel dalam format spreadsheet CSV"
+            title={t.exportCsvTooltip}
           >
             <Download className="w-3.5 h-3.5 text-sky-400" />
-            <span>Export CSV</span>
+            <span>{t.exportCsvBtn}</span>
           </button>
 
           <button
             type="button"
-            onClick={() => triggerPrintDialog(doc)}
+            onClick={() => triggerPrintDialog()}
             className="px-3.5 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-100 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-600 cursor-pointer"
-            title="Cetak langsung ke mesin printer fisik atau simpan via PDF"
+            title={t.printTooltip}
           >
             <Printer className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Cetak</span>
+            <span>{t.printBtn}</span>
           </button>
 
           <button
             onClick={handleDownloadPDF}
-            className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md text-xs font-bold shadow-md flex items-center gap-2 transition-colors cursor-pointer"
-            title="Download dokumen formulir ini sebagai file .PDF resmi langsung ke perangkat"
+            className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md text-xs font-bold shadow-xs flex items-center gap-2 transition-colors cursor-pointer"
+            title={t.downloadPdfTooltip}
           >
             <FileDown className="w-4 h-4 text-white" />
-            <span>Unduh PDF Resmi</span>
+            <span>{t.downloadPdfBtn}</span>
           </button>
         </div>
       </div>
@@ -431,7 +435,19 @@ export const OfficialPrintView: React.FC<OfficialPrintViewProps> = ({
         <div className="flex items-center gap-2">
           <Info className="w-4 h-4 text-sky-400 shrink-0" />
           <span>
-            <strong>Standar Formulir ANKAL:</strong> Kapasitas 1 formulir adalah <strong>12 sampel</strong>. Dokumen Anda otomatis diatur menjadi <strong>{totalPages} formulir/halaman</strong> ({doc.rows.length} total sampel).
+            {lang === 'zh' ? (
+              <>
+                <strong>ANKAL 官方格式规范：</strong> 每张表单固定容量为 <strong>12 个采样点</strong>。系统已自动划分为 <strong>{totalPages} 页/张表单</strong>（共 {doc.rows.length} 个点位）。导出的官方凭证表格保持官方印尼语标准。
+              </>
+            ) : lang === 'en' ? (
+              <>
+                <strong>ANKAL Form Standard:</strong> 1 official form capacity is strictly <strong>12 samples</strong>. Your document is organized into <strong>{totalPages} page(s)</strong> ({doc.rows.length} total points). Exported official documents remain standard in Bahasa Indonesia.
+              </>
+            ) : (
+              <>
+                <strong>Standar Formulir ANKAL:</strong> Kapasitas 1 formulir adalah <strong>12 sampel</strong>. Dokumen Anda otomatis diatur menjadi <strong>{totalPages} formulir/halaman</strong> ({doc.rows.length} total sampel).
+              </>
+            )}
           </span>
         </div>
       </div>

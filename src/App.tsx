@@ -15,7 +15,7 @@ import {
   INITIAL_HEADER_DATA, 
   createEmptyRow 
 } from './types/datlap';
-import { exportToCSV, exportToExcel, exportToJSON, exportToPDF, triggerPrintDialog } from './utils/exportUtils';
+import { Language, getTranslation } from './utils/i18n';
 import { 
   Sparkles, 
   CheckCircle, 
@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 
 const STORAGE_KEY_CURRENT_FORM = 'ankal_datlap_current_form_v2';
+const STORAGE_KEY_LANG = 'ankal_datlap_language_v1';
 
 const createDefaultDocument = (): DatlapDocument => {
   const initialRows: DatlapRow[] = [
@@ -128,6 +129,30 @@ const createDefaultDocument = (): DatlapDocument => {
 };
 
 export default function App() {
+  // UI Language Selection
+  const [lang, setLang] = useState<Language>(() => {
+    try {
+      const savedLang = localStorage.getItem(STORAGE_KEY_LANG) as Language;
+      if (savedLang === 'id' || savedLang === 'en' || savedLang === 'zh') {
+        return savedLang;
+      }
+    } catch {
+      // fallback
+    }
+    return 'id';
+  });
+
+  const t = getTranslation(lang);
+
+  const handleLangChange = (newLang: Language) => {
+    setLang(newLang);
+    try {
+      localStorage.setItem(STORAGE_KEY_LANG, newLang);
+    } catch {
+      // ignore
+    }
+  };
+
   // Active Editing Document
   const [doc, setDoc] = useState<DatlapDocument>(() => {
     try {
@@ -353,6 +378,8 @@ export default function App() {
         onSaveDraft={handleSaveCurrentDraft}
         auditPass={totalAuditErrors === 0}
         totalErrors={totalAuditErrors}
+        lang={lang}
+        onSelectLang={handleLangChange}
       />
 
       {/* Main Content Area */}
@@ -360,6 +387,7 @@ export default function App() {
         <OfficialPrintView
           doc={doc}
           onBackToEditor={() => setViewMode('editor')}
+          lang={lang}
         />
       ) : (
         <main id="main-content" className="flex-1 w-full max-w-7xl mx-auto p-3 sm:p-5 space-y-4 bg-slate-50 no-print">
@@ -372,18 +400,18 @@ export default function App() {
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="text-sm sm:text-base font-extrabold text-slate-800 tracking-tight">
-                    Pengambilan Contoh Uji Air Oleh Pelanggan
+                    {t.appTitle}
                   </h2>
                   <span className="text-[11px] font-mono bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-300 font-bold">
                     {doc.docCode}
                   </span>
                   <span className="text-[11px] font-mono bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-300 font-bold flex items-center gap-1">
                     <Layers className="w-3 h-3 text-emerald-600" />
-                    {totalForms} Formulir ({doc.rows.length} Sampel • 12/Form)
+                    {totalForms} {lang === 'zh' ? '张表单' : lang === 'en' ? 'Forms' : 'Formulir'} ({doc.rows.length} {t.samplesCountBadge} • 12/Form)
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Formulir digital resmi Laboratorium Lingkungan ANKAL. Sesuai SNI dan standar regulasi lingkungan.
+                  {t.appSubtitle}
                 </p>
               </div>
             </div>
@@ -403,12 +431,12 @@ export default function App() {
                 {totalAuditErrors === 0 ? (
                   <>
                     <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Data Lengkap</span>
+                    <span>{t.auditComplete}</span>
                   </>
                 ) : (
                   <>
                     <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                    <span>{totalAuditErrors} Kolom Kosong</span>
+                    <span>{totalAuditErrors} {t.auditIncomplete}</span>
                   </>
                 )}
               </button>
@@ -417,10 +445,10 @@ export default function App() {
                 type="button"
                 onClick={() => setViewMode('printPreview')}
                 className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
-                title="Selesai pengisian dan buka format cetak resmi"
+                title={t.doneBtnTooltip}
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Selesai</span>
+                <span>{t.doneBtn}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
 
@@ -428,7 +456,7 @@ export default function App() {
                 type="button"
                 onClick={handleResetForm}
                 className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 cursor-pointer"
-                title="Reset formulir"
+                title={t.resetFormBtn}
               >
                 <RefreshCw className="w-4 h-4" />
               </button>
@@ -440,6 +468,7 @@ export default function App() {
             header={doc.header}
             onChange={handleHeaderChange}
             highlightWajibOnly={highlightWajibOnly}
+            lang={lang}
           />
 
           {/* Section 2: Sampling Points & In-situ Measurements Grid */}
@@ -454,6 +483,7 @@ export default function App() {
             paramsConfig={doc.paramsConfig}
             onOpenParamConfig={() => setIsParamConfigOpen(true)}
             highlightWajibOnly={highlightWajibOnly}
+            lang={lang}
           />
 
           {/* Section 3: Bottom 3 Cards (Denah Lokasi, Kondisi Lingkungan/Cuaca, Diverifikasi Oleh) */}
@@ -467,6 +497,7 @@ export default function App() {
                 onChangeType={(type) => handleFooterChange('denahType', type)}
                 onChangeDataUrl={(url) => handleFooterChange('denahDataUrl', url)}
                 onChangeText={(txt) => handleFooterChange('denahText', txt)}
+                lang={lang}
               />
             </div>
 
@@ -475,7 +506,7 @@ export default function App() {
               <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-200 flex items-center gap-1.5">
                 <CloudSun className="w-3.5 h-3.5 text-amber-600" />
                 <label className="text-[11px] font-bold text-slate-800 uppercase">
-                  KONDISI LINGKUNGAN / CUACA
+                  {t.weatherTitle}
                 </label>
               </div>
               <div className="p-3.5 flex-1 flex flex-col justify-between">
@@ -483,11 +514,11 @@ export default function App() {
                   rows={6}
                   value={doc.footer.kondisiLingkunganCuaca}
                   onChange={(e) => handleFooterChange('kondisiLingkunganCuaca', e.target.value)}
-                  placeholder="Contoh: Cuaca Cerah Berawan, Suhu Udara 30°C, Kelembaban 70%, Debit air stabil normal..."
+                  placeholder={t.weatherPlaceholder}
                   className="w-full flex-1 min-h-[140px] p-2.5 text-xs bg-slate-50/40 rounded border border-slate-300 focus:border-emerald-500 focus:bg-white resize-none font-medium text-slate-800 leading-relaxed"
                 />
                 <p className="text-[10px] text-slate-500 mt-2 italic">
-                  * Deskripsikan cuaca dan situasi sekitar lokasi pengambilan sampel.
+                  {t.weatherNote}
                 </p>
               </div>
             </div>
@@ -497,6 +528,7 @@ export default function App() {
               <SignaturePad
                 data={doc.footer.diverifikasiOleh}
                 onChange={handleVerifierChange}
+                lang={lang}
               />
             </div>
           </div>
@@ -508,14 +540,14 @@ export default function App() {
                 type="button"
                 onClick={handleResetForm}
                 className="px-3 py-1.5 text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-300 rounded-lg font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
-                title="Reset formulir kosong"
+                title={t.resetFormBtn}
               >
                 <RefreshCw className="w-3.5 h-3.5" />
-                <span>Reset Form Kosong</span>
+                <span>{t.resetFormBtn}</span>
               </button>
               <span className="text-slate-300">|</span>
               <span className="text-slate-500">
-                Terakhir diperbarui: {new Date(doc.updatedAt || Date.now()).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/:/g, '.')}
+                {t.lastUpdated}: {new Date(doc.updatedAt || Date.now()).toLocaleTimeString(lang === 'zh' ? 'zh-CN' : lang === 'en' ? 'en-US' : 'id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
               </span>
             </div>
 
@@ -524,10 +556,10 @@ export default function App() {
                 type="button"
                 onClick={() => setViewMode('printPreview')}
                 className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold flex items-center gap-2 shadow-xs transition-colors text-xs sm:text-sm cursor-pointer"
-                title="Selesai pengisian data dan buka format cetak resmi"
+                title={t.doneBtnTooltip}
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Selesai</span>
+                <span>{t.doneBtn}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -565,6 +597,7 @@ export default function App() {
         onClose={() => setIsParamConfigOpen(false)}
         config={doc.paramsConfig}
         onChangeConfig={(newCfg) => setDoc(prev => ({ ...prev, paramsConfig: newCfg }))}
+        lang={lang}
       />
 
       {/* Preset Templates Modal */}
@@ -581,8 +614,9 @@ export default function App() {
             paramsConfig: tmpl.paramsConfig ? { ...prev.paramsConfig, ...tmpl.paramsConfig } : prev.paramsConfig,
             updatedAt: new Date().toISOString(),
           }));
-          showToast('Template sampling berhasil diterapkan!', 'success');
+          showToast(t.toastTemplateApplied, 'success');
         }}
+        lang={lang}
       />
 
       {/* Drafts Manager Modal */}
@@ -594,6 +628,7 @@ export default function App() {
         onSaveCurrentAsNew={(name) => {
           showToast(`Draft "${name}" berhasil disimpan ke arsip!`, 'success');
         }}
+        lang={lang}
       />
     </div>
   );

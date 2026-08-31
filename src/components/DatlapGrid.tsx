@@ -7,12 +7,12 @@ import {
   Clock, 
   AlertCircle, 
   Layers, 
-  Sliders, 
-  ChevronRight 
+  Sliders
 } from 'lucide-react';
 import { DatlapRow, InSituParamsConfig } from '../types/datlap';
 import { getCurrentGpsPosition } from '../utils/geoUtils';
 import { formatPhValue } from '../utils/phUtils';
+import { Language, getTranslation } from '../utils/i18n';
 
 interface DatlapGridProps {
   rows: DatlapRow[];
@@ -25,6 +25,7 @@ interface DatlapGridProps {
   paramsConfig: InSituParamsConfig;
   onOpenParamConfig: () => void;
   highlightWajibOnly: boolean;
+  lang: Language;
 }
 
 const SAMPLES_PER_FORM = 12;
@@ -54,11 +55,13 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
   paramsConfig,
   onOpenParamConfig,
   highlightWajibOnly,
+  lang,
 }) => {
   const [gpsLoadingRow, setGpsLoadingRow] = useState<number | null>(null);
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [activePageTab, setActivePageTab] = useState<'all' | number>('all');
 
+  const t = getTranslation(lang);
   const totalForms = Math.max(1, Math.ceil(rows.length / SAMPLES_PER_FORM));
 
   // Compute displayed rows based on active tab
@@ -83,7 +86,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
       onChangeRow(index, 'koordinatNS', coords.nsString);
       onChangeRow(index, 'koordinatE', coords.eString);
     } catch (err: any) {
-      setGpsError(err.message || 'Gagal mengambil GPS');
+      setGpsError(err.message || (lang === 'zh' ? '获取GPS定位失败' : lang === 'en' ? 'Failed to acquire GPS' : 'Gagal mengambil GPS'));
       setTimeout(() => setGpsError(null), 5000);
     } finally {
       setGpsLoadingRow(null);
@@ -138,14 +141,14 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
         <div className="flex items-center gap-2 flex-wrap">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
-            Tabel Data Lapangan & Pengukuran In-Situ
+            {t.gridSectionTitle}
           </h3>
           <span className="text-[11px] font-mono bg-white px-2 py-0.5 rounded text-slate-700 font-semibold border border-slate-200 shadow-2xs">
-            {rows.length} Titik Sampel
+            {rows.length} {t.samplesCountBadge}
           </span>
           <span className="text-[11px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded font-bold flex items-center gap-1">
             <Layers className="w-3 h-3 text-emerald-600" />
-            {totalForms} Formulir (Maks. 12/Form)
+            {totalForms} {lang === 'zh' ? '张表单 (每页12条)' : lang === 'en' ? 'Forms (Max 12/Form)' : 'Formulir (Maks. 12/Form)'}
           </span>
         </div>
 
@@ -159,29 +162,32 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
           )}
 
           <button
+            type="button"
             onClick={onOpenParamConfig}
             className="px-2.5 py-1 text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded flex items-center gap-1 text-xs font-medium transition-colors cursor-pointer"
-            title="Sembunyikan/Tampilkan kolom in-situ yang tidak diuji"
+            title={t.paramTooltip}
           >
             <Sliders className="w-3 h-3 text-emerald-600" />
-            <span>Kustom Kolom</span>
+            <span>{t.paramBtn}</span>
           </button>
 
           <button
+            type="button"
             onClick={() => onAddMultipleRows(3)}
             className="px-2.5 py-1 text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded flex items-center gap-1 text-xs font-medium transition-colors cursor-pointer"
-            title="Tambah 3 baris sampel baru sekaligus"
+            title={lang === 'zh' ? '添加3个新行' : lang === 'en' ? 'Add 3 new sample rows' : 'Tambah 3 baris sampel baru sekaligus'}
           >
             <Plus className="w-3 h-3 text-emerald-600" />
-            <span>+3 Baris</span>
+            <span>+3 {lang === 'zh' ? '行' : lang === 'en' ? 'Rows' : 'Baris'}</span>
           </button>
 
           <button
+            type="button"
             onClick={onAddRow}
             className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded flex items-center gap-1.5 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>+ Tambah Baris</span>
+            <span>{t.addSampleBtn}</span>
           </button>
         </div>
       </div>
@@ -192,10 +198,10 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
           <div className="flex items-center gap-1.5">
             <span className="text-xs font-bold text-slate-800 flex items-center gap-1">
               <Layers className="w-3.5 h-3.5 text-emerald-700" />
-              Navigasi Halaman Formulir:
+              {lang === 'zh' ? '表单页面导航：' : lang === 'en' ? 'Form Page Navigation:' : 'Navigasi Halaman Formulir:'}
             </span>
             <span className="text-[11px] text-slate-500">
-              (Total {rows.length} sampel dibagi menjadi {totalForms} formulir @ 12 sampel)
+              ({lang === 'zh' ? `共 ${rows.length} 个采样点，分为 ${totalForms} 页` : lang === 'en' ? `Total ${rows.length} samples divided into ${totalForms} pages @ 12 samples` : `Total ${rows.length} sampel dibagi menjadi ${totalForms} formulir @ 12 sampel`})
             </span>
           </div>
 
@@ -209,7 +215,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
               }`}
             >
-              Semua ({rows.length})
+              {t.pageTabAll} ({rows.length})
             </button>
 
             {Array.from({ length: totalForms }).map((_, pIdx) => {
@@ -229,7 +235,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                       : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
                   }`}
                 >
-                  <span>Formulir {fNum}</span>
+                  <span>{t.pageTabPrefix} {fNum}</span>
                   <span className={`text-[10px] font-mono px-1 rounded ${
                     isCurrent ? 'bg-emerald-800 text-emerald-100' : 'bg-slate-100 text-slate-600'
                   }`}>
@@ -250,11 +256,11 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
             {/* Top Level Columns */}
             <tr className="border-b border-slate-300">
               <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center w-12 bg-slate-100 text-slate-700">
-                NO.
+                {t.colNo}.
               </th>
               <th rowSpan={2} className="border border-slate-300 px-2 py-2 w-32 text-center bg-slate-100 text-slate-700">
                 <div>LAB ID</div>
-                <span className="text-[9px] font-normal text-slate-500 block">(Kode Lab)</span>
+                <span className="text-[9px] font-normal text-slate-500 block">({t.colLabId})</span>
               </th>
               <th 
                 rowSpan={2} 
@@ -262,7 +268,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
               >
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                  <span>TITIK SAMPLING</span>
+                  <span className="truncate">{t.colSamplingPoint}</span>
                   <span className="text-emerald-700 font-extrabold">*</span>
                 </div>
               </th>
@@ -272,7 +278,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
               >
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                  <span>JAM</span>
+                  <span>{t.colTime}</span>
                   <span className="text-emerald-700 font-extrabold">*</span>
                 </div>
               </th>
@@ -283,7 +289,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
               >
                 <div className="flex items-center justify-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                  <span>TITIK KOORDINAT</span>
+                  <span>{lang === 'zh' ? 'GPS经纬度坐标' : lang === 'en' ? 'GPS COORDINATES' : 'TITIK KOORDINAT'}</span>
                   <span className="text-emerald-700 font-extrabold">*</span>
                 </div>
               </th>
@@ -292,67 +298,67 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                 colSpan={inSituColsCount} 
                 className="border border-slate-300 px-2 py-1.5 text-center bg-slate-100 text-slate-800"
               >
-                PARAMETER IN-SITU (SESUAI PERMINTAAN PENGUJIAN)
+                {t.colInSituHeader}
               </th>
               {paramsConfig.showTeknikSampling && (
                 <th rowSpan={2} className="border border-slate-300 px-2 py-2 w-36 bg-slate-100 text-slate-700">
-                  TEKNIK SAMPLING
+                  {t.colTechnique}
                 </th>
               )}
               <th rowSpan={2} className="border border-slate-300 px-2 py-2 text-center w-16 bg-slate-100 text-slate-700">
-                AKSI
+                {t.colAction}
               </th>
             </tr>
 
             {/* Sub-Header Columns */}
             <tr className="text-[10px] bg-slate-50 text-slate-700 font-semibold border-b border-slate-300">
               <th className="border border-slate-300 px-2 py-1.5 w-32 text-slate-700 text-center">
-                N / S
+                {t.colCoordNS}
               </th>
               <th className="border border-slate-300 px-2 py-1.5 w-32 text-slate-700 text-center">
-                E
+                {t.colCoordE}
               </th>
 
               {/* In-situ sub headers with units */}
               {paramsConfig.showTemperatur && (
                 <th className="border border-slate-300 px-2 py-1.5 w-20 text-center">
-                  Temperatur<br /><span className="text-slate-500 font-normal">(°C)</span>
+                  {t.colTemp}<br /><span className="text-slate-500 font-normal">(°C)</span>
                 </th>
               )}
               {paramsConfig.showPh && (
                 <th className="border border-slate-300 px-2 py-1.5 w-28 text-center bg-slate-50">
-                  <span className="text-slate-800 font-bold">pH *</span><br />
-                  <span className="text-[9px] text-slate-500 font-medium">(2 Desimal)</span>
+                  <span className="text-slate-800 font-bold">{t.colPh} *</span><br />
+                  <span className="text-[9px] text-slate-500 font-medium">({lang === 'zh' ? '两位小数' : lang === 'en' ? '2 decimals' : '2 Desimal'})</span>
                 </th>
               )}
               {paramsConfig.showKlorinBebas && (
                 <th className="border border-slate-300 px-2 py-1.5 w-24 text-center">
-                  Klorin Bebas<br /><span className="text-slate-500 font-normal">(abs/mg/L)</span>
+                  {t.colFreeChlorine}<br /><span className="text-slate-500 font-normal">(mg/L)</span>
                 </th>
               )}
               {paramsConfig.showDo && (
                 <th className="border border-slate-300 px-2 py-1.5 w-20 text-center">
-                  DO<br /><span className="text-slate-500 font-normal">(mg/L)</span>
+                  {t.colDo}<br /><span className="text-slate-500 font-normal">(mg/L)</span>
                 </th>
               )}
               {paramsConfig.showKecerahan && (
                 <th className="border border-slate-300 px-2 py-1.5 w-20 text-center">
-                  Kecerahan<br /><span className="text-slate-500 font-normal">(m)</span>
+                  {t.colTransparency}<br /><span className="text-slate-500 font-normal">(m)</span>
                 </th>
               )}
               {paramsConfig.showDhl && (
                 <th className="border border-slate-300 px-2 py-1.5 w-24 text-center">
-                  DHL<br /><span className="text-slate-500 font-normal">({paramsConfig.dhlUnit})</span>
+                  {t.colDhl}<br /><span className="text-slate-500 font-normal">({paramsConfig.dhlUnit})</span>
                 </th>
               )}
               {paramsConfig.showLapisanMinyak && (
                 <th className="border border-slate-300 px-2 py-1.5 w-28 text-center">
-                  Lapisan Minyak
+                  {t.colOilLayer}
                 </th>
               )}
               {paramsConfig.showKekeruhan && (
                 <th className="border border-slate-300 px-2 py-1.5 w-22 text-center">
-                  Kekeruhan<br /><span className="text-slate-500 font-normal">(NTU)</span>
+                  {t.colTurbidity}<br /><span className="text-slate-500 font-normal">(NTU)</span>
                 </th>
               )}
             </tr>
@@ -375,14 +381,14 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                         <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
                           <div className="flex items-center gap-2">
                             <span className="bg-white text-emerald-900 px-2 py-0.5 rounded font-black text-[11px] uppercase tracking-wider">
-                              Formulir Halaman {formNumber}
+                              {t.pageTabPrefix} {formNumber}
                             </span>
                             <span className="text-emerald-100 font-medium">
-                              Batas Kapasitas 12 Sampel Tercapai • Formulir Baru Dimulai di Bawah Ini
+                              {lang === 'zh' ? '已达到单页12个采样点容量限制 • 新一页表单从下方开始' : lang === 'en' ? '12 Samples Capacity Reached • New Page Starts Below' : 'Batas Kapasitas 12 Sampel Tercapai • Formulir Baru Dimulai di Bawah Ini'}
                             </span>
                           </div>
                           <span className="text-[11px] font-mono text-emerald-200 bg-emerald-900/60 px-2 py-0.5 rounded border border-emerald-600/50">
-                            Sampel No. {idx + 1} s/d {Math.min(idx + 12, rows.length)}
+                            {lang === 'zh' ? `第 ${idx + 1} 至 ${Math.min(idx + 12, rows.length)} 点位` : lang === 'en' ? `Samples No. ${idx + 1} - ${Math.min(idx + 12, rows.length)}` : `Sampel No. ${idx + 1} s/d ${Math.min(idx + 12, rows.length)}`}
                           </span>
                         </div>
                       </td>
@@ -414,7 +420,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                         value={row.labId || ''}
                         placeholder=""
                         className="w-full px-2 py-1 text-xs border border-slate-200 rounded font-mono text-slate-500 text-center bg-slate-100/80 cursor-not-allowed select-none pointer-events-none font-medium"
-                        title="Kolom LAB ID dikosongkan (diisi khusus oleh pihak laboratorium)"
+                        title={lang === 'zh' ? '实验室编号由实验室检测人员分配填写' : lang === 'en' ? 'Lab ID is filled by the laboratory testing team' : 'Kolom LAB ID dikosongkan (diisi khusus oleh pihak laboratorium)'}
                       />
                     </td>
 
@@ -454,7 +460,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                               ? 'border-amber-400 focus:border-emerald-500'
                               : 'border-slate-300 focus:border-emerald-500 bg-white'
                           }`}
-                          title="Isi jam pengambilan sample"
+                          title={t.setTimeNowBtn}
                         />
                         <select
                           value={extractTimezone(row.jam)}
@@ -463,7 +469,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                             onChangeRow(idx, 'jam', updateJamTimezone(row.jam, newTz));
                           }}
                           className="px-1 py-1 text-[10px] font-bold border border-slate-300 rounded bg-white text-slate-700 focus:border-emerald-500 shrink-0 cursor-pointer"
-                          title="Pilih Zona Waktu (WIB, WITA, WIT)"
+                          title="Zona Waktu (WIB, WITA, WIT)"
                         >
                           <option value="WIB">WIB</option>
                           <option value="WITA">WITA</option>
@@ -473,7 +479,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           type="button"
                           onClick={() => handleSetCurrentTime(idx)}
                           className="p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors shrink-0 cursor-pointer"
-                          title="Gunakan Jam Sekarang"
+                          title={t.setTimeNowBtn}
                         >
                           <Clock className="w-3.5 h-3.5" />
                         </button>
@@ -501,7 +507,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           onClick={() => handleFetchGps(idx)}
                           disabled={gpsLoadingRow === idx}
                           className="absolute right-1 text-slate-400 hover:text-emerald-600 p-1 hover:bg-emerald-50 rounded transition-colors disabled:opacity-50 cursor-pointer"
-                          title="Ambil GPS Otomatis dari Perangkat"
+                          title={t.getGpsBtn}
                         >
                           <MapPin className={`w-3.5 h-3.5 ${gpsLoadingRow === idx ? 'animate-bounce text-emerald-600' : ''}`} />
                         </button>
@@ -553,7 +559,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           }}
                           placeholder="7.00"
                           className="w-full px-1 py-1 text-xs text-center border border-slate-200 rounded focus:border-emerald-500 font-mono font-semibold text-emerald-900"
-                          title="Ketik angka pH, otomatis diformat 2 desimal saat selesai"
+                          title="pH (2 decimals)"
                         />
                       </td>
                     )}
@@ -657,7 +663,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           type="button"
                           onClick={() => onDuplicateRow(idx)}
                           className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded transition-colors cursor-pointer"
-                          title="Duplikasi Baris Ini"
+                          title={t.duplicateRowBtn}
                         >
                           <Copy className="w-3.5 h-3.5" />
                         </button>
@@ -667,7 +673,7 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
                           onClick={() => onRemoveRow(idx)}
                           disabled={rows.length <= 1}
                           className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                          title="Hapus Baris Ini"
+                          title={t.deleteRowBtn}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -685,11 +691,11 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
       <div className="p-2.5 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center gap-2 text-xs">
         <div className="flex items-center gap-2 text-slate-600 font-medium">
           <span>
-            Total Baris Sampel: <strong className="text-slate-800">{rows.length}</strong>
+            {t.totalSamples}: <strong className="text-slate-800">{rows.length}</strong>
           </span>
           <span>•</span>
           <span>
-            Formulir Terbentuk: <strong className="text-emerald-700">{totalForms} Halaman</strong> (1 Form = 12 Sampel)
+            {t.estimatedPages}: <strong className="text-emerald-700">{totalForms} {lang === 'zh' ? '页' : lang === 'en' ? 'Pages' : 'Halaman'}</strong> (1 Form = 12 {t.samplesCountBadge})
           </span>
         </div>
 
@@ -698,9 +704,9 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
             type="button"
             onClick={onClearEmptyRows}
             className="text-slate-600 hover:text-red-700 text-xs hover:underline cursor-pointer transition-colors"
-            title="Bersihkan baris kosong yang belum terisi"
+            title={t.clearEmptyBtn}
           >
-            Bersihkan Baris Kosong
+            {t.clearEmptyBtn}
           </button>
 
           <button
@@ -709,10 +715,11 @@ export const DatlapGrid: React.FC<DatlapGridProps> = ({
             className="px-3 py-1 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 rounded font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 text-slate-600" />
-            <span>+ Tambah Baris</span>
+            <span>{t.addSampleBtn}</span>
           </button>
         </div>
       </div>
     </div>
   );
 };
+

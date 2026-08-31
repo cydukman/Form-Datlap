@@ -1,16 +1,19 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Pen, RotateCcw, Check, UserCheck } from 'lucide-react';
+import { RotateCcw, Check, UserCheck } from 'lucide-react';
 import { FooterData } from '../types/datlap';
+import { Language, getTranslation } from '../utils/i18n';
 
 interface SignaturePadProps {
   data: FooterData['diverifikasiOleh'];
   onChange: (field: keyof FooterData['diverifikasiOleh'], value: string) => void;
+  lang: Language;
 }
 
-export const SignaturePad: React.FC<SignaturePadProps> = ({ data, onChange }) => {
+export const SignaturePad: React.FC<SignaturePadProps> = ({ data, onChange, lang }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(!!data.signatureDataUrl);
+  const t = getTranslation(lang);
 
   useEffect(() => {
     if (canvasRef.current && data.signatureDataUrl) {
@@ -91,12 +94,12 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ data, onChange }) =>
       <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-200 flex justify-between items-center">
         <label className="text-[11px] font-bold text-slate-800 uppercase flex items-center gap-1.5">
           <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Diverifikasi Oleh</span>
+          <span>{t.sigTitle}</span>
         </label>
         {hasSignature && (
           <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-semibold flex items-center gap-1">
             <Check className="w-3 h-3 text-emerald-600" />
-            <span>TTD Tersimpan</span>
+            <span>{t.sigSavedBadge}</span>
           </span>
         )}
       </div>
@@ -104,26 +107,26 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ data, onChange }) =>
       <div className="p-3.5 space-y-2.5 flex-1 flex flex-col justify-between">
         <div>
           <label className="block text-[10px] font-semibold text-slate-500 uppercase mb-0.5">
-            Nama Pengambil Sampel / Verifikator:
+            {t.sigNameLabel}:
           </label>
           <input
             type="text"
             value={data.nama}
             onChange={(e) => onChange('nama', e.target.value)}
-            placeholder="Nama Lengkap Petugas"
+            placeholder={t.sigNamePlaceholder}
             className="w-full px-2 py-1 text-xs bg-white rounded border border-slate-300 focus:border-emerald-500 font-medium"
           />
         </div>
 
         <div>
           <label className="block text-[10px] font-semibold text-slate-500 uppercase mb-0.5">
-            Jabatan / Instansi:
+            {t.sigPositionLabel}:
           </label>
           <input
             type="text"
             value={data.jabatan}
             onChange={(e) => onChange('jabatan', e.target.value)}
-            placeholder="Petugas Sampling Pelanggan / HSE Staff"
+            placeholder={t.sigPositionPlaceholder}
             className="w-full px-2 py-1 text-xs bg-white rounded border border-slate-300 focus:border-emerald-500"
           />
         </div>
@@ -132,15 +135,15 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ data, onChange }) =>
         <div className="flex-1 flex flex-col">
           <div className="flex justify-between items-center mb-1">
             <span className="text-[10px] font-semibold text-slate-500 uppercase">
-              Tanda Tangan Digital:
+              {t.sigCanvasLabel}:
             </span>
             <button
               type="button"
               onClick={clearCanvas}
-              className="text-[10px] text-slate-500 hover:text-red-600 flex items-center gap-1"
+              className="text-[10px] text-slate-500 hover:text-red-600 flex items-center gap-1 cursor-pointer"
             >
               <RotateCcw className="w-2.5 h-2.5" />
-              <span>Hapus TTD</span>
+              <span>{t.sigClearBtn}</span>
             </button>
           </div>
 
@@ -160,7 +163,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ data, onChange }) =>
             />
             {!hasSignature && (
               <span className="absolute text-[10px] text-slate-300 select-none pointer-events-none italic">
-                Goreskan tanda tangan di sini
+                {t.sigPlaceholder}
               </span>
             )}
           </div>

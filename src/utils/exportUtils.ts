@@ -504,22 +504,11 @@ export async function exportToPDF(
   }
 }
 
-export async function triggerPrintDialog(doc?: DatlapDocument, targetClass: string = 'official-form-page'): Promise<void> {
-  const isInIframe = window.self !== window.top;
-
+export function triggerPrintDialog(): void {
   try {
-    // Attempt standard browser print dialog
+    window.focus();
     window.print();
   } catch (e) {
-    console.warn('Direct window.print() was blocked or failed:', e);
-  }
-
-  // If in an iframe or if document data is provided, provide guaranteed printing via PDF export
-  if (doc) {
-    try {
-      await exportToPDF(doc, targetClass);
-    } catch (pdfErr) {
-      console.error('PDF export print fallback failed:', pdfErr);
-    }
+    console.error('Direct window.print() failed:', e);
   }
 }
